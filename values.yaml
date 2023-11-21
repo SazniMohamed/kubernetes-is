@@ -24,17 +24,17 @@ deployment:
       nginx.ingress.kubernetes.io/session-cookie-name: "paf"
       nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
       nginx.ingress.kubernetes.io/session-cookie-samesite: "None"
-      # Disable same site cookie, more info on https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md#session-affinity
+      # Disable same site cookie. Ref: https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md#session-affinity
       nginx.ingress.kubernetes.io/session-cookie-conditional-samesite-none: "true"
       nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
       nginx.ingress.kubernetes.io/session-cookie-path: "/"
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-      # Enable or disable proxy buffering proxy_buffering. By default, proxy buffering is disabled in the NGINX config(https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md#proxy-buffering).
+      # Enable or disable proxy buffering proxy_buffering. By default, proxy buffering is disabled in the NGINX config(Ref: https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md#proxy-buffering).
       nginx.ingress.kubernetes.io/proxy-buffering: "on"
-      # Sets the size of the buffer proxy_buffer_size used for reading the first part of the response received from the proxied server. By default proxy buffer size is set as "64k".(https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md#proxy-buffer-size)
+      # Sets the size of the buffer proxy_buffer_size used for reading the first part of the response received from the proxied server. By default proxy buffer size is set as "64k".(Ref: https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md#proxy-buffer-size)
       nginx.ingress.kubernetes.io/proxy-buffer-size: "64k"
-      # Nginx rate limiting: zone(http://nginx.org/en/docs/http/ngx_http_limit_req_module.html)
-      # Nginx rate limiting: burst limit(http://nginx.org/en/docs/http/ngx_http_limit_req_module.html)
+      # Nginx rate limiting: zone(Ref: http://nginx.org/en/docs/http/ngx_http_limit_req_module.html)
+      # Nginx rate limiting: burst limit(Ref: http://nginx.org/en/docs/http/ngx_http_limit_req_module.html)
       nginx.ingress.kubernetes.io/configuration-snippet: |
         limit_req zone=is burst=150 nodelay;                                                   
         limit_req_status 429;
@@ -45,7 +45,7 @@ deployment:
     repository: ""
     # -- Container image digest
     digest: ""
-    # -- Refer to the Kubernetes documentation on updating images (https://kubernetes.io/docs/concepts/containers/images/#updating-images)
+    # -- Refer to the Kubernetes documentation on updating images (Ref: https://kubernetes.io/docs/concepts/containers/images/#updating-images)
     pullPolicy: "Always"
   # -- Progress deadline seconds where the Deployment controller waits before indicating (in the Deployment status) that the Deployment progress has stalled.
   progressDeadlineSeconds: 600
@@ -77,7 +77,7 @@ deployment:
   hpa:
     # -- Enable HPA for the deployment
     enabled: false
-    # -- Max replica count for HPA(https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
+    # -- Max replica count for HPA(Ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
     maxReplicas: 2
     # -- Average CPU utilization for HPA
     averageUtilizationCPU: 65
@@ -110,7 +110,7 @@ deployment:
     periodSeconds: 10
   resources:
     # -- These are the minimum resource recommendations for running WSO2 Identity and Access Management product profiles
-    # -- as per official documentation (https://is.docs.wso2.com/en/latest/setup/installation-prerequisites/)
+    # -- as per official documentation (Ref: https://is.docs.wso2.com/en/latest/setup/installation-prerequisites/)
     requests:
       # -- The minimum amount of memory that should be allocated for a Pod
       memory: "2Gi"
@@ -146,7 +146,7 @@ deployment:
       # -- Enable persistence for artifact sharing using Azure file share
       enabled: true
       # -- Azure Storage Account credentials to access the file shares
-      # -- Refer to official documentation at https://docs.microsoft.com/en-us/azure/aks/azure-files-volume#create-a-kubernetes-secret
+      # -- Ref: https://docs.microsoft.com/en-us/azure/aks/azure-files-volume#create-a-kubernetes-secret
       # -- Names of Azure File shares for persisted data
       fileShare: "is"
       # -- K8s secret name for the Azure file share CI driver 
@@ -165,24 +165,27 @@ deployment:
         # -- Name of the Azure Resource Group to which the target Azure Key Vault belongs
         resourceGroup: ""
         # -- Service Principal created for transacting with the target Azure Key Vault
-        # For advanced details refer to official documentation (https://github.com/Azure/secrets-store-csi-driver-provider-azure/blob/master/docs/service-principal-mode.md)
+        # Ref: https://github.com/Azure/secrets-store-csi-driver-provider-azure/blob/master/docs/service-principal-mode.md
         servicePrincipalAppID: ""
         # -- Azure Active Directory tenant ID of the target Key Vault
         tenantId: ""
         # -- Azure Key Vault secret name of the internal keystore password
         secretName: "INTERNAL-KEYSTORE-PASSWORD-DECRYPTED"
-      # -- The name of the Kubernetes secret that contains the service principal credentials to access Azure Key Vault. https://azure.github.io/secrets-store-csi-driver-provider-azure/docs/configurations/identity-access-modes/service-principal-mode/#configure-service-principal-to-access-keyvault
+      # -- The name of the Kubernetes secret that contains the service principal credentials to access Azure Key Vault. Ref: https://azure.github.io/secrets-store-csi-driver-provider-azure/docs/configurations/identity-access-modes/service-principal-mode/#configure-service-principal-to-access-keyvault
       nodePublishSecretRef: "azure-kv-secret-store-sp"
 
 deploymentToml:
   server:
-    # -- Change default ports(https://is.docs.wso2.com/en/latest/references/default-ports-of-wso2-products/#:~:text=For%20each%20additional%20WSO2%20product,to%20the%20server%20during%20startup.)
+    # -- Change default ports(Ref: https://is.docs.wso2.com/en/latest/references/default-ports-of-wso2-products/#:~:text=For%20each%20additional%20WSO2%20product,to%20the%20server%20during%20startup.)
     offset: "0"
   userStore:
     type: "database_unique_id"
   superAdmin:
+    # -- Carbon console admin account username
     username: ""
+    # -- Carbon console admin account password
     encryptedPassword: ""
+    # -- Create Carbon console admin account
     createAdminAccount: true
   account:
     recovery:
@@ -194,7 +197,9 @@ deploymentToml:
       endpoint:
         encryptedAppPassword: ""
   clustering:
+    # -- Enable clustering
     enabled: true
+    # -- Cluster domain
     domain: "wso2.is.domain"
     # -- This defines membership schema type
     membershipScheme: "kubernetes"
@@ -214,12 +219,12 @@ deploymentToml:
       driver: "com.microsoft.sqlserver.jdbc.SQLServerDriver"
       # -- The database pool options
       poolOptions:
-#        maxActive: "50"
-#        maxWait: "60000"
-#        minIdle: "10"
-#        validationInterval: "30000"
-#        defaultAutoCommit: true
-#        commitOnReturn: false
+        maxActive: "50"
+        maxWait: "60000"
+        minIdle: "10"
+        validationInterval: "30000"
+        defaultAutoCommit: true
+        commitOnReturn: false
     shared:
       # -- The SQL server type(ex: mysql, mssql)
       type: "mssql"
@@ -233,12 +238,12 @@ deploymentToml:
       driver: "com.microsoft.sqlserver.jdbc.SQLServerDriver"
       # -- The database pool options
       poolOptions:
-  #        maxActive: "50"
-  #        maxWait: "60000"
-  #        minIdle: "10"
-  #        validationInterval: "30000"
-  #        defaultAutoCommit: true
-  #        commitOnReturn: false
+          maxActive: "50"
+          maxWait: "60000"
+          minIdle: "10"
+          validationInterval: "30000"
+          defaultAutoCommit: true
+          commitOnReturn: false
     user:
       # -- The SQL server type(ex: mysql, mssql)
       type: "mssql"
@@ -252,12 +257,12 @@ deploymentToml:
       driver: "com.microsoft.sqlserver.jdbc.SQLServerDriver"
       # -- The database pool options
       poolOptions:
-    #        maxActive: "50"
-    #        maxWait: "60000"
-    #        minIdle: "10"
-    #        validationInterval: "30000"
-    #        defaultAutoCommit: true
-    #        commitOnReturn: false
+          maxActive: "50"
+          maxWait: "60000"
+          minIdle: "10"
+          validationInterval: "30000"
+          defaultAutoCommit: true
+          commitOnReturn: false
     consent:
       # -- The SQL server type(ex: mysql, mssql)
       type: "mssql"
@@ -335,23 +340,25 @@ deploymentToml:
      port: 587
      encryptedPassword: ""
   oauth:
-    # -- Enable/Disable the internal token cleanup process. https://is.docs.wso2.com/en/6.0.0/deploy/remove-unused-tokens-from-the-database/#!
+    # -- Enable/Disable the internal token cleanup process. Ref: https://is.docs.wso2.com/en/6.0.0/deploy/remove-unused-tokens-from-the-database/#!
     tokenCleanup: false
-    # -- Enable/Disable Assertions in Access Tokens. https://is.docs.wso2.com/en/6.0.0/deploy/enable-assertions-in-access-tokens/
-    enableAssertionsInAccessTokens: true
+    tokenGeneration:
+      # -- Add UserName Assertions in Access Tokens. Ref: https://is.docs.wso2.com/en/6.0.0/deploy/enable-assertions-in-access-tokens/
+      includeUsernameInAccessToken: false
+
   transport:
     http:
-      # -- Enable/Disable HTTP transport. https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#enabledisable-httphttps-transport
+      # -- Enable/Disable HTTP transport. Ref: https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#enabledisable-httphttps-transport
       enabled: false
     https:
       properties:
-        # -- Server name in HTTP response headers. https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#change-the-server-name-in-http-response-headers
+        # -- Server name in HTTP response headers. Ref: https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#change-the-server-name-in-http-response-headers
         server: "WSO2 Carbon Server"
       sslHostConfig:
         properties:
-          # -- Enabling SSL protocols in the WSO2 IS. https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#enabling-ssl-protocols-in-the-wso2-is
+          # -- Enabling SSL protocols in the WSO2 IS. Ref: https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#enabling-ssl-protocols-in-the-wso2-is
           protocols: "+TLSv1, +TLSv1.1, +TLSv1.2, +TLSv1.3"
-          # -- Configure TSL ciphers. https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#disable-weak-ciphers
+          # -- Configure TSL ciphers. Ref: https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#disable-weak-ciphers
           ciphers: "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384, TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384, TLS_DHE_DSS_WITH_AES_256_GCM_SHA384, TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256, TLS_DHE_DSS_WITH_AES_128_GCM_SHA256, TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384, TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384, TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384, TLS_DHE_DSS_WITH_AES_256_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA, TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA, TLS_ECDH_RSA_WITH_AES_256_CBC_SHA, TLS_DHE_DSS_WITH_AES_256_CBC_SHA, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256, TLS_DHE_DSS_WITH_AES_128_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA, TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA, TLS_ECDH_RSA_WITH_AES_128_CBC_SHA, TLS_DHE_DSS_WITH_AES_128_CBC_SHA, TLS_EMPTY_RENEGOTIATION_INFO_SCSVF"
   # -- Add custom configurations to deployment.toml.
   extraConfigs: #|

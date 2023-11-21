@@ -6,13 +6,13 @@ offset = {{ .Values.deploymentToml.server.offset | quote }}
 
 [transport.https.properties]
 proxyPort = 443
-server = {{ .Values.deploymentToml.transport.https.properties.server }}
+server = {{ .Values.deploymentToml.transport.https.properties.server | quote }}
 
 [transport.https.sslHostConfig.properties]
-protocols={{ .Values.deploymentToml.transport.https.sslHostConfig.properties.protocols }}
+protocols={{ .Values.deploymentToml.transport.https.sslHostConfig.properties.protocols | quote }}
 
 [transport.https.sslHostConfig.properties]
-ciphers={{ .Values.deploymentToml.transport.https.sslHostConfig.properties.ciphers }}
+ciphers={{ .Values.deploymentToml.transport.https.sslHostConfig.properties.ciphers | quote }}
 
 [transport]
 http.enabled={{ .Values.deploymentToml.transport.http.enabled }}
@@ -141,10 +141,8 @@ properties.KUBERNETES_SERVICES={{ include "..fullname" . | quote }}
 [oauth.token_cleanup]
 enable = {{.Values.deploymentToml.oauth.tokenCleanup }}
 
-{{- if .Values.deploymentToml.oauth.enableAssertionsInAccessTokens }}
 [oauth.token_generation]
-include_username_in_access_token = true
-{{- end }}
+include_username_in_access_token = {{.Values.deploymentToml.oauth.tokenGeneration.includeUsernameInAccessToken }}
 
 {{- if .Values.deploymentToml.recaptcha.enabled }}
 #Google reCAPTCHA settings.
