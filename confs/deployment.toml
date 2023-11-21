@@ -1,0 +1,133 @@
+[server]
+hostname = {{ .Values.deployment.ingress.hostName | quote }}
+node_ip = "$env{NODE_IP}"
+base_path = "https://$ref{server.hostname}:${carbon.management.port}"
+offset = {{ .Values.deploymentToml.server.offset | quote }}
+
+[transport.https.properties]
+proxyPort = 443
+
+[super_admin]
+username = {{ .Values.deploymentToml.superAdmin.username | quote }}
+password = "$secret{super_admin_password}"
+create_admin_account = {{ .Values.deploymentToml.superAdmin.createAdminAccount }}
+
+[user_store]
+type = {{ .Values.deploymentToml.userStore.type | quote }}
+
+[database.identity_db]
+type = {{ .Values.deploymentToml.database.identity.type | quote }}
+url = {{ .Values.deploymentToml.database.identity.url | quote }}
+username = {{ .Values.deploymentToml.database.identity.username | quote }}
+password = "$secret{database_identity_password}"
+driver = {{ .Values.deploymentToml.database.identity.driver | quote }}
+{{- if .Values.deploymentToml.database.identity.poolOptions }}
+[database.identity_db.pool_options]
+{{- range $key, $value := .Values.deploymentToml.database.identity.poolOptions }}
+{{ $key }} = {{ $value | quote }}
+{{- end }}
+{{- end }}
+
+[database.shared_db]
+type = {{ .Values.deploymentToml.database.shared.type | quote }}
+url = {{ .Values.deploymentToml.database.shared.url | quote }}
+username = {{ .Values.deploymentToml.database.shared.username | quote }}
+password = "$secret{database_shared_password}"
+driver = {{ .Values.deploymentToml.database.shared.driver | quote }}
+{{- if .Values.deploymentToml.database.shared.poolOptions }}
+[database.shared_db.pool_options]
+{{- range $key, $value := .Values.deploymentToml.database.shared.poolOptions }}
+{{ $key }} = {{ $value | quote }}
+{{- end }}
+{{- end }}
+
+[keystore.tls]
+file_name =  {{ .Values.deploymentToml.keystore.tls.fileName | quote }}
+type =  {{ .Values.deploymentToml.keystore.tls.type | quote }}
+password = "$secret{keystore_tls_password}"
+alias = {{ .Values.deploymentToml.keystore.tls.alias | quote }}
+key_password = "$secret{keystore_tls_key_password}"
+
+[keystore.primary]
+file_name =  {{ .Values.deploymentToml.keystore.primary.fileName | quote }}
+type =  {{ .Values.deploymentToml.keystore.primary.type | quote }}
+password = "$secret{keystore_primary_password}"
+alias = {{ .Values.deploymentToml.keystore.primary.alias | quote }}
+key_password = "$secret{keystore_primary_key_password}"
+
+[keystore.internal]
+file_name =  {{ .Values.deploymentToml.keystore.internal.fileName | quote }}
+type =  {{ .Values.deploymentToml.keystore.internal.type | quote }}
+password = "$secret{keystore_internal_password}"
+alias = {{ .Values.deploymentToml.keystore.internal.alias | quote }}
+key_password = "$secret{keystore_internal_key_password}"
+
+[truststore]
+file_name =  {{ .Values.deploymentToml.truststore.fileName | quote }}
+type =  {{ .Values.deploymentToml.truststore.type | quote }}
+password = "$secret{keystore_truststore_password}"
+
+[account_recovery.endpoint.auth]
+hash= {{ .Values.deploymentToml.account.recovery.endpoint.auth.hash | quote }}
+
+[identity.auth_framework.endpoint]
+app_password= "$secret{app_password}"
+
+{{- if .Values.deploymentToml.clustering.enabled }}
+[clustering]
+membership_scheme={{.Values.deploymentToml.clustering.membershipScheme | quote }}
+domain= {{.Values.deploymentToml.clustering.domain | quote }}
+local_member_port={{.Values.deploymentToml.clustering.localMemberPort | quote }}
+properties.KUBERNETES_NAMESPACE={{ .Release.Namespace | quote }}
+properties.KUBERNETES_SERVICES={{ include "..fullname" . | quote }}
+{{- end }}
+
+{{- if .Values.deploymentToml.recaptcha.enabled }}
+#Google reCAPTCHA settings.
+
+[recaptcha]
+enabled = true
+api_url = {{ .Values.deploymentToml.recaptcha.apiUrl | quote }}
+verify_url = {{ .Values.deploymentToml.recaptcha.verifyUrl | quote }}
+site_key = "$secret{recaptcha_site_key}"
+secret_key = "$secret{recaptcha_secret_key}"
+{{- end }}
+
+{{- if .Values.deploymentToml.outputAdapter.email.enabled }}
+# SMTP email sender settings.
+[output_adapter.email]
+from_address= {{ .Values.deploymentToml.outputAdapter.email.fromAddress | quote }}
+username= {{ .Values.deploymentToml.outputAdapter.email.username | quote }}
+password= "$secret{output_adapter_email_password}"
+hostname= {{ .Values.deploymentToml.outputAdapter.email.hostname | quote }}
+port= {{ .Values.deploymentToml.outputAdapter.email.port }}
+{{- end }}
+
+# Secure vault encryted secrets
+[secrets]
+# Super admin creds
+super_admin_password = {{ .Values.deploymentToml.superAdmin.encryptedPassword | quote }}
+# Database creds
+database_identity_password = {{ .Values.deploymentToml.database.identity.encryptedPassword | quote }}
+database_shared_password = {{ .Values.deploymentToml.database.shared.encryptedPassword | quote }}
+# Keystores
+keystore_tls_password = {{ .Values.deploymentToml.keystore.tls.encryptedPassword | quote }}
+keystore_tls_key_password = {{ .Values.deploymentToml.keystore.tls.encryptedKeyPassword | quote }}
+keystore_primary_password = {{ .Values.deploymentToml.keystore.primary.encryptedPassword | quote }}
+keystore_primary_key_password = {{ .Values.deploymentToml.keystore.primary.encryptedKeyPassword | quote }}
+keystore_internal_password = {{ .Values.deploymentToml.keystore.internal.encryptedPassword | quote }}
+keystore_internal_key_password = {{ .Values.deploymentToml.keystore.internal.encryptedKeyPassword | quote }}
+# Truststore
+keystore_truststore_password = {{ .Values.deploymentToml.truststore.encryptedPassword | quote }}
+# App password
+app_password = {{ .Values.deploymentToml.identity.authFramework.endpoint.encryptedAppPassword | quote }}
+
+{{- if .Values.deploymentToml.recaptcha.enabled }}
+# Recaptcha creds
+recaptcha_site_key = {{ .Values.deploymentToml.recaptcha.encryptedSiteKey | quote }}
+recaptcha_secret_key = {{ .Values.deploymentToml.recaptcha.encryptedSecretKey | quote }}
+{{- end }}
+
+{{- if .Values.deploymentToml.outputAdapter.email.enabled }}
+output_adapter_email_password = {{ .Values.deploymentToml.outputAdapter.email.encryptedPassword | quote }}
+{{- end }}

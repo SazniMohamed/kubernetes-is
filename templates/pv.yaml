@@ -1,0 +1,37 @@
+{{- if .Values.deployment.persistence.enabled }}
+# -------------------------------------------------------------------------------------
+#
+# Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com). All Rights Reserved.
+#
+# This software is the property of WSO2 LLC. and its suppliers, if any.
+# Dissemination of any information or reproduction of any material contained
+# herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+# You may not alter or remove any copyright or other notice from copies of this content.
+#
+# --------------------------------------------------------------------------------------
+{{- if .Values.deployment.persistence.azure.enabled }}
+apiVersion: {{ .Values.k8sKindAPIVersions.persistentVolume }}
+kind: PersistentVolume
+metadata:
+  name: {{ template "..fullname" . }}
+  labels:
+    purpose: {{ template "..fullname" . }}-identity-server-persistence
+spec:
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: {{ .Values.deployment.persistence.capacity }}
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+  azureFile:
+    secretName: {{ .Values.deployment.persistence.azure.secretName }}
+    secretNamespace: {{ .Release.Namespace }}
+    shareName: {{ .Values.deployment.persistence.azure.fileShare }}
+  mountOptions:
+    - dir_mode=0777
+    - file_mode=0777
+    - uid={{ .Values.deployment.securityContext.runAsUser }}
+    - gid={{ .Values.deployment.securityContext.runAsUser }}
+    - cache=strict
+{{- end }}
+{{- end }}

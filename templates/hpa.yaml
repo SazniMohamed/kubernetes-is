@@ -1,0 +1,26 @@
+{{- if .Values.deployment.hpa.enabled }}
+# -------------------------------------------------------------------------------------
+#
+# Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com). All Rights Reserved.
+#
+# This software is the property of WSO2 LLC. and its suppliers, if any.
+# Dissemination of any information or reproduction of any material contained
+# herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+# You may not alter or remove any copyright or other notice from copies of this content.
+#
+# --------------------------------------------------------------------------------------
+apiVersion: {{ .Values.k8sKindAPIVersions.horizontalPodAutoscaler }}
+kind: HorizontalPodAutoscaler
+metadata:
+  annotations:
+    autoscaling.alpha.kubernetes.io/metrics: '[{"type":"Resource","resource":{"name":"memory","targetAverageUtilization":{{ .Values.deployment.hpa.averageUtilizationMemory }}}}]'
+  name: {{ template "..fullname" . }}
+spec:
+  maxReplicas: {{ .Values.deployment.hpa.maxReplicas }}
+  minReplicas: {{ .Values.deployment.replicas }}
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "..fullname" . }}
+  targetCPUUtilizationPercentage: {{ .Values.deployment.hpa.averageUtilizationCPU }}
+{{- end }}

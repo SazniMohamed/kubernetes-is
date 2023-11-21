@@ -1,0 +1,36 @@
+# -------------------------------------------------------------------------------------
+#
+# Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com). All Rights Reserved.
+#
+# This software is the property of WSO2 LLC. and its suppliers, if any.
+# Dissemination of any information or reproduction of any material contained
+# herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+# You may not alter or remove any copyright or other notice from copies of this content.
+#
+# --------------------------------------------------------------------------------------
+apiVersion: {{ .Values.k8sKindAPIVersions.ingress }}
+kind: Ingress
+metadata:
+  annotations:
+    {{- if .Values.deployment.ingress.annotations }}
+    {{- toYaml .Values.deployment.ingress.annotations | nindent 4 }}
+    {{- end }}
+  namespace:  {{ .Release.Namespace }}
+  name: {{ template "..fullname" . }}
+spec:
+  ingressClassName: {{ .Values.deployment.ingress.ingressClassName }}
+  rules:
+  - host: {{ .Values.deployment.ingress.hostName | quote }}
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ template "..fullname" . }}
+            port:
+              number: 9443
+  tls:
+  - hosts:
+    - {{ .Values.deployment.ingress.hostName | quote }}
+    secretName: {{ .Values.deployment.ingress.tlsSecretsName  }}

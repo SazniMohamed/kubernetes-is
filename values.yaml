@@ -1,0 +1,305 @@
+# -------------------------------------------------------------------------------------
+#
+# Copyright (c) 2023, WSO2 LLC. (http://www.wso2.com). All Rights Reserved.
+#
+# This software is the property of WSO2 LLC. and its suppliers, if any.
+# Dissemination of any information or reproduction of any material contained
+# herein in any form is strictly forbidden, unless permitted by WSO2 expressly.
+# You may not alter or remove any copyright or other notice from copies of this content.
+#
+# --------------------------------------------------------------------------------------
+
+deployment:
+  apparmor:
+    profile: "runtime/default"
+  ingress:
+    # -- Host name of the Identity server as Key Manager
+    hostName: "wso2is.com"
+    # -- Ingress class name
+    ingressClassName: "nginx"
+    # -- K8s TLS secret for configured hostname
+    tlsSecretsName: "is-tls"
+    annotations:
+      nginx.ingress.kubernetes.io/affinity: "cookie"
+      nginx.ingress.kubernetes.io/session-cookie-name: "paf"
+      nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
+      nginx.ingress.kubernetes.io/session-cookie-samesite: "None"
+      # Disable same site cookie, more info on https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md#session-affinity
+      nginx.ingress.kubernetes.io/session-cookie-conditional-samesite-none: "true"
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+      nginx.ingress.kubernetes.io/session-cookie-path: "/"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      # Enable or disable proxy buffering proxy_buffering. By default, proxy buffering is disabled in the NGINX config(https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md#proxy-buffering).
+      nginx.ingress.kubernetes.io/proxy-buffering: "on"
+      # Sets the size of the buffer proxy_buffer_size used for reading the first part of the response received from the proxied server. By default proxy buffer size is set as "64k".(https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md#proxy-buffer-size)
+      nginx.ingress.kubernetes.io/proxy-buffer-size: "64k"
+      # Nginx rate limiting: zone(http://nginx.org/en/docs/http/ngx_http_limit_req_module.html)
+      # Nginx rate limiting: burst limit(http://nginx.org/en/docs/http/ngx_http_limit_req_module.html)
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        limit_req zone=is burst=150 nodelay;                                                   
+        limit_req_status 429;
+  image:
+    # -- Container image registry host name
+    registry: ""
+    # -- Container image repository name
+    repository: ""
+    # -- Container image digest
+    digest: ""
+    # -- Refer to the Kubernetes documentation on updating images (https://kubernetes.io/docs/concepts/containers/images/#updating-images)
+    pullPolicy: "Always"
+  # -- Progress deadline seconds where the Deployment controller waits before indicating (in the Deployment status) that the Deployment progress has stalled.
+  progressDeadlineSeconds: 600
+  # -- preStopHookWaitInSeconds waits before calling server stop in the pre stop hook.
+  preStopHookWaitSeconds: 10
+  # -- Pod termination grace period. K8s API server waits this period after pre stop hook and sending TERM signal
+  terminationGracePeriodSeconds: 40
+  # -- Number of deployment replicas
+  replicas: 2
+  # -- Additional volumeMounts to the pods. All the configuration mounts should be done under the path "/home/wso2carbon/wso2-config-volume/"
+  extraVolumeMounts: [ ]
+  #  - name: custom-property-file
+  #    mountPath: /home/wso2carbon/wso2-config-volume/repository/conf/custom-property-file.properties
+  #    subPath: custom-property-file.properties
+
+  # -- Additional volumes to the pod.
+  extraVolumes: []
+  #  - name: custom-property-file
+  #    configMap:
+  #      # Provide the name of the ConfigMap containing the files you want
+  #      # to add to the container
+  #      name: custom-property-file
+  securityContext:
+    # -- Run as user ID
+    runAsUser: 10001
+    seccompProfile:
+    # --  Seccomp profile type
+      type: "RuntimeDefault"
+  hpa:
+    # -- Enable HPA for the deployment
+    enabled: false
+    # -- Max replica count for HPA(https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
+    maxReplicas: 2
+    # -- Average CPU utilization for HPA
+    averageUtilizationCPU: 65
+    # -- averageUtilizationMemory parameter should be greater than 75 if not un expected scaling will happen during rolling update.
+    averageUtilizationMemory: 75
+  strategy:
+    rollingUpdate:
+      # -- The maximum number of pods that can be scheduled above the desired number of pods
+      maxSurge: 1
+      # -- The maximum number of pods that can be unavailable during the update
+      maxUnavailable: 0
+  # -- Kubernetes Probes
+  # -- Startup probe executed prior to Liveness Probe taking over
+  startupProbe:
+    # -- Number of seconds after the container has started before startup probes are initiated
+    initialDelaySeconds: 60
+    # -- How often (in seconds) to perform the probe
+    periodSeconds: 5
+    # -- Number of attempts
+    failureThreshold: 30
+  # -- Indicates whether the container is running
+  livenessProbe:
+    # -- How often (in seconds) to perform the probe
+    periodSeconds: 10
+  # -- Indicates whether the container is ready to service requests
+  readinessProbe:
+    # -- Number of seconds after the container has started before readiness probes are initiated
+    initialDelaySeconds: 60
+    # -- How often (in seconds) to perform the probe
+    periodSeconds: 10
+  resources:
+    # -- These are the minimum resource recommendations for running WSO2 Identity and Access Management product profiles
+    # -- as per official documentation (https://is.docs.wso2.com/en/latest/setup/installation-prerequisites/)
+    requests:
+      # -- The minimum amount of memory that should be allocated for a Pod
+      memory: "2Gi"
+      # -- The minimum amount of CPU that should be allocated for a Pod
+      cpu: "2"
+    limits:
+      # -- The maximum amount of memory that should be allocated for a Pod
+      memory: "4Gi"
+      # -- The maximum amount of CPU that should be allocated for a Pod
+      cpu: "3"
+    jvm:
+      # -- JVM memory options
+      memOpts: "-Xms2048m -Xmx2048m"
+      # -- JVM parameters
+      javaOpts: -Djdk.tls.ephemeralDHKeySize=2048 -Djdk.tls.rejectClientInitiatedRenegotiation=true
+        -Dhttpclient.hostnameVerifier=Strict -Djdk.tls.client.protocols=TLSv1.2
+        -Djava.util.prefs.systemRoot=/home/wso2carbon/.java -Djava.util.prefs.userRoot=/home/wso2carbon/.java/.userPrefs
+  # -- Product version
+  buildVersion: "7.0.0-alpha2"
+  # -- Product pack name
+  productPackName: "wso2is"
+  # -- K8s secret name which contains JKS files
+  JKSSecretName: "keystores"
+  persistence:
+    # -- Enable persistence for artifact sharing
+    enabled: false
+    subPaths:
+      # -- Azure storage account tenants file share path
+      tenants: "is/tenants"
+      # -- Azure storage account userstores file share path
+      userstores: "is/userstores"
+    azure:
+      # -- Enable persistence for artifact sharing using Azure file share
+      enabled: true
+      # -- Azure Storage Account credentials to access the file shares
+      # -- Refer to official documentation at https://docs.microsoft.com/en-us/azure/aks/azure-files-volume#create-a-kubernetes-secret
+      # -- Names of Azure File shares for persisted data
+      fileShare: "is"
+      # -- K8s secret name for the Azure file share CI driver 
+      secretName: "azure-storage-csi"
+    # -- Define capacity for persistent runtime artifacts which are shared between instances of the Identity Server profile
+    capacity: 100Gi
+  secretStore:
+    azure:
+      # -- Enable Azure Key Vault integration.
+      enabled: true
+      keyVault:
+        # -- Name of the target Azure Key Vault instance
+        name: ""
+        # -- Subscription ID of the target Azure Key Vault
+        subscriptionId: ""
+        # -- Name of the Azure Resource Group to which the target Azure Key Vault belongs
+        resourceGroup: ""
+        # -- Service Principal created for transacting with the target Azure Key Vault
+        # For advanced details refer to official documentation (https://github.com/Azure/secrets-store-csi-driver-provider-azure/blob/master/docs/service-principal-mode.md)
+        servicePrincipalAppID: ""
+          # -- Azure Active Directory tenant ID of the target Key Vault
+        tenantId: ""
+      # -- The name of the Kubernetes secret that contains the service principal credentials to access Azure Key Vault. https://azure.github.io/secrets-store-csi-driver-provider-azure/docs/configurations/identity-access-modes/service-principal-mode/#configure-service-principal-to-access-keyvault
+      nodePublishSecretRef: "azure-kv-secret-store-sp"
+
+deploymentToml:
+  server:
+    # -- Change default ports(https://is.docs.wso2.com/en/latest/references/default-ports-of-wso2-products/#:~:text=For%20each%20additional%20WSO2%20product,to%20the%20server%20during%20startup.)
+    offset: "0"
+  userStore:
+    type: "database_unique_id"
+  superAdmin:
+    username: ""
+    encryptedPassword: ""
+    createAdminAccount: true
+  account:
+    recovery:
+      endpoint:
+        auth:
+          hash: ""
+  identity:
+    authFramework:
+      endpoint:
+        encryptedAppPassword: ""
+  clustering:
+    enabled: true
+    domain: "wso2.is.domain"
+    # -- This defines membership schema type
+    membershipScheme: "kubernetes"
+    # -- This defines local member port
+    localMemberPort: "4001"
+  database:
+    identity:
+      # -- The SQL server type(ex: mysql, mssql)
+      type: "mssql"
+      # -- The database username
+      username: ""
+      # -- The database JDBC URL
+      url: ""
+      # -- The secure vault encrypted database password
+      encryptedPassword: ""
+      # -- The database JDBC driver
+      driver: "com.microsoft.sqlserver.jdbc.SQLServerDriver"
+      # -- The database pool options
+      poolOptions:
+#        maxActive: "50"
+#        maxWait: "60000"
+#        minIdle: "10"
+#        validationInterval: "30000"
+#        defaultAutoCommit: true
+#        commitOnReturn: false
+    shared:
+      # -- The SQL server type(ex: mysql, mssql)
+      type: "mssql"
+      # -- The database username
+      username: ""
+      # -- The database JDBC URL
+      url: ""
+      # -- The secure vault encrypted database password
+      encryptedPassword: ""
+      # -- The database JDBC driver
+      driver: "com.microsoft.sqlserver.jdbc.SQLServerDriver"
+      # -- The database pool options
+      poolOptions:
+  #        maxActive: "50"
+  #        maxWait: "60000"
+  #        minIdle: "10"
+  #        validationInterval: "30000"
+  #        defaultAutoCommit: true
+  #        commitOnReturn: false
+  keystore:
+    tls:
+      fileName: "tls.jks"
+      type: "JKS"
+      encryptedPassword: ""
+      alias: "wso2carbon"
+      encryptedKeyPassword: ""
+    primary:
+      fileName: "primary.jks"
+      type: "JKS"
+      encryptedPassword: ""
+      alias: "wso2carbon"
+      encryptedKeyPassword: ""
+    internal:
+      fileName: "internal.jks"
+      type: "JKS"
+      encryptedPassword: ""
+      alias: "wso2carbon"
+      encryptedKeyPassword: ""
+  truststore:
+    fileName: "client-truststore.jks"
+    type: "JKS"
+    encryptedPassword: ""
+  recaptcha:
+    enabled: false
+    apiUrl: ""
+    verifyUrl: ""
+    encryptedSiteKey: ""
+    encryptedSecretKey: ""
+  outputAdapter:
+    email:
+     enabled: false
+     fromAddress: ""
+     username: ""
+     hostname: ""
+     port: 587
+     encryptedPassword: ""
+
+# -- K8s API versions for K8s kinds
+k8sKindAPIVersions:
+  # -- K8s API version for kind Deployment
+  deployment: "apps/v1"
+  # -- K8s API version for kind ConfigMap
+  configMap: "v1"
+  # -- K8s API version for kind HorizontalPodAutoscaler
+  horizontalPodAutoscaler: "autoscaling/v1"
+  # -- K8s API version for kind Ingress
+  ingress: "networking.k8s.io/v1"
+  # -- K8s API version for kind PodDisruptionBudget
+  podDisruptionBudget: "policy/v1"
+  # -- K8s API version for kind PersistentVolumeClaim
+  persistentVolumeClaim: "v1"
+  # -- K8s API version for kind PersistentVolume
+  persistentVolume: "v1"
+  # -- K8s API version for kind ServiceAccount
+  serviceAccount: "v1"
+  # -- K8s API version for kind Role
+  role: "rbac.authorization.k8s.io/v1"
+  # -- K8s API version for kind RoleBinding
+  roleBinding: "rbac.authorization.k8s.io/v1"
+  # -- K8s API version for kind SecretProviderClass
+  secretProviderClass: "secrets-store.csi.x-k8s.io/v1"
+  # -- K8s API version for kind Secret
+  secret: "v1"
+  # -- K8s API version for kind Service
+  service: "v1"
