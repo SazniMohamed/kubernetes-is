@@ -41,6 +41,52 @@ driver = {{ .Values.deploymentToml.database.shared.driver | quote }}
 {{- end }}
 {{- end }}
 
+[datasource.WSO2ConsentDS]
+id="WSO2CONSENT_DB"
+url = {{ .Values.deploymentToml.database.consent.url | quote }}
+username = {{ .Values.deploymentToml.database.consent.username | quote }}
+password = "$secret{database_consent_password}"
+driver = {{ .Values.deploymentToml.database.consent.driver | quote }}
+jmx_enable=false
+{{- if .Values.deploymentToml.database.consent.poolOptions }}
+[datasource.WSO2ConsentDS.pool_options]
+{{- range $key, $value := .Values.deploymentToml.database.consent.poolOptions }}
+{{ $key }} = {{ $value | quote }}
+{{- end }}
+{{- end }}
+
+[authentication.consent]
+data_source="jdbc/WSO2CONSENT_DB"
+
+[realm_manager]
+data_source = "WSO2USER_DB"
+
+[database.user]
+type = {{ .Values.deploymentToml.database.user.type | quote }}
+url = {{ .Values.deploymentToml.database.user.url | quote }}
+username = {{ .Values.deploymentToml.database.user.username | quote }}
+password = "$secret{database_user_password}"
+driver = {{ .Values.deploymentToml.database.user.driver | quote }}
+{{- if .Values.deploymentToml.database.user.poolOptions }}
+[database.user.pool_options]
+{{- range $key, $value := .Values.deploymentToml.database.user.poolOptions }}
+{{ $key }} = {{ $value | quote }}
+{{- end }}
+{{- end }}
+
+[bps_database.config]
+type = {{ .Values.deploymentToml.database.bps.type | quote }}
+url = {{ .Values.deploymentToml.database.bps.url | quote }}
+username = {{ .Values.deploymentToml.database.bps.username | quote }}
+password = "$secret{database_bps_password}"
+driver = {{ .Values.deploymentToml.database.bps.driver | quote }}
+{{- if .Values.deploymentToml.database.bps.poolOptions }}
+[bps_database.config.pool_options]
+{{- range $key, $value := .Values.deploymentToml.database.bps.poolOptions }}
+{{ $key }} = {{ $value | quote }}
+{{- end }}
+{{- end }}
+
 [keystore.tls]
 file_name =  {{ .Values.deploymentToml.keystore.tls.fileName | quote }}
 type =  {{ .Values.deploymentToml.keystore.tls.type | quote }}
@@ -110,6 +156,8 @@ super_admin_password = {{ .Values.deploymentToml.superAdmin.encryptedPassword | 
 # Database creds
 database_identity_password = {{ .Values.deploymentToml.database.identity.encryptedPassword | quote }}
 database_shared_password = {{ .Values.deploymentToml.database.shared.encryptedPassword | quote }}
+database_user_password = {{ .Values.deploymentToml.database.user.encryptedPassword | quote }}
+database_consent_password = {{ .Values.deploymentToml.database.consent.encryptedPassword | quote }}
 # Keystores
 keystore_tls_password = {{ .Values.deploymentToml.keystore.tls.encryptedPassword | quote }}
 keystore_tls_key_password = {{ .Values.deploymentToml.keystore.tls.encryptedKeyPassword | quote }}

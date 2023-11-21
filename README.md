@@ -4,6 +4,8 @@
 
 A Helm chart for WSO2 Identity server
 
+## Deployment architecture
+
 ## Required permission
 User or service principle who installs the Helm chart, needs to possess actions `"create", "get", "list", "update", "delete"` on following K8s kinds,
 
@@ -27,7 +29,7 @@ User or service principle who installs the Helm chart, needs to possess actions 
 * [Secrets Store CSI Driver](https://secrets-store-csi-driver.sigs.k8s.io/introduction) and [secrets-store-csi-driver-provider-azure](https://github.com/Azure/secrets-store-csi-driver-provider-azure) 
 * [Azure Storage account](https://learn.microsoft.com/en-us/azure/aks/azure-csi-files-storage-provision) to cater persistence volume type `ReadWriteMany` [access mode](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes) and a share `is` under the Azure storage account. 
 * [Azure Key Vault](https://learn.microsoft.com/en-us/azure/key-vault/general/overview) to persists secrets 
-* Schema loaded SQL server databases 
+* Pre-configured RDBMS. Please refer to [documentation](https://is.docs.wso2.com/en/latest/deploy/set-up-separate-databases-for-clustering/#!) on setting up databases. 
 
 ## Install Helm chart on Azure Kubernetes service(AKS)
 

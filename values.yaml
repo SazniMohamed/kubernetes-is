@@ -237,6 +237,65 @@ deploymentToml:
   #        validationInterval: "30000"
   #        defaultAutoCommit: true
   #        commitOnReturn: false
+    user:
+      # -- The SQL server type(ex: mysql, mssql)
+      type: "mssql"
+      # -- The database username
+      username: ""
+      # -- The database JDBC URL
+      url: ""
+      # -- The secure vault encrypted database password
+      encryptedPassword: ""
+      # -- The database JDBC driver
+      driver: "com.microsoft.sqlserver.jdbc.SQLServerDriver"
+      # -- The database pool options
+      poolOptions:
+#        maxActive = "80"
+#        maxWait = "60000"
+#        minIdle = "5"
+#        testOnBorrow = true
+#        validationQuery="SELECT 1"
+#        validationInterval="30000"
+#        defaultAutoCommit=false
+    consent:
+      # -- The SQL server type(ex: mysql, mssql)
+      type: "mssql"
+      # -- The database username
+      username: ""
+      # -- The database JDBC URL
+      url: ""
+      # -- The secure vault encrypted database password
+      encryptedPassword: ""
+      # -- The database JDBC driver
+      driver: "com.microsoft.sqlserver.jdbc.SQLServerDriver"
+      # -- The database pool options
+      poolOptions:
+        maxActive = "80"
+        maxWait = "60000"
+        minIdle = "5"
+        testOnBorrow = true
+        validationQuery="SELECT 1"
+        validationInterval="30000"
+        defaultAutoCommit=false
+    bps:
+      # -- The SQL server type(ex: mysql, mssql)
+      type: "mssql"
+      # -- The database username
+      username: ""
+      # -- The database JDBC URL
+      url: ""
+      # -- The secure vault encrypted database password
+      encryptedPassword: ""
+      # -- The database JDBC driver
+      driver: "com.microsoft.sqlserver.jdbc.SQLServerDriver"
+      # -- The database pool options
+      poolOptions:
+        maxActive = "50"
+        maxWait = "60000"
+        minIdle = "5"
+        testOnBorrow = true
+        validationInterval = "30000"
+        validationQuery = "SELECT 1; COMMIT"
   keystore:
     tls:
       fileName: "tls.jks"
