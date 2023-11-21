@@ -334,7 +334,29 @@ deploymentToml:
      hostname: ""
      port: 587
      encryptedPassword: ""
-
+  oauth:
+    # -- Enable/Disable the internal token cleanup process. https://is.docs.wso2.com/en/6.0.0/deploy/remove-unused-tokens-from-the-database/#!
+    tokenCleanup: false
+    # -- Enable/Disable Assertions in Access Tokens. https://is.docs.wso2.com/en/6.0.0/deploy/enable-assertions-in-access-tokens/
+    enableAssertionsInAccessTokens: true
+  transport:
+    http:
+      # -- Enable/Disable HTTP transport. https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#enabledisable-httphttps-transport
+      enabled: false
+    https:
+      properties:
+        # -- Server name in HTTP response headers. https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#change-the-server-name-in-http-response-headers
+        server: "WSO2 Carbon Server"
+      sslHostConfig:
+        properties:
+          # -- Enabling SSL protocols in the WSO2 IS. https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#enabling-ssl-protocols-in-the-wso2-is
+          protocols: "+TLSv1, +TLSv1.1, +TLSv1.2, +TLSv1.3"
+          # -- Configure TSL ciphers. https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#disable-weak-ciphers
+          ciphers: "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384, TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384, TLS_DHE_DSS_WITH_AES_256_GCM_SHA384, TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256, TLS_DHE_DSS_WITH_AES_128_GCM_SHA256, TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384, TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384, TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384, TLS_DHE_DSS_WITH_AES_256_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA, TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA, TLS_ECDH_RSA_WITH_AES_256_CBC_SHA, TLS_DHE_DSS_WITH_AES_256_CBC_SHA, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256, TLS_DHE_DSS_WITH_AES_128_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA, TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA, TLS_ECDH_RSA_WITH_AES_128_CBC_SHA, TLS_DHE_DSS_WITH_AES_128_CBC_SHA, TLS_EMPTY_RENEGOTIATION_INFO_SCSVF"
+  # -- Add custom configurations to deployment.toml.
+  extraConfigs: #|
+    # [transport.https.properties]
+    # proxyPort = 443
 # -- K8s API versions for K8s kinds
 k8sKindAPIVersions:
   # -- K8s API version for kind Deployment

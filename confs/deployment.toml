@@ -6,6 +6,16 @@ offset = {{ .Values.deploymentToml.server.offset | quote }}
 
 [transport.https.properties]
 proxyPort = 443
+server = {{ .Values.deploymentToml.transport.https.properties.server }}
+
+[transport.https.sslHostConfig.properties]
+protocols={{ .Values.deploymentToml.transport.https.sslHostConfig.properties.protocols }}
+
+[transport.https.sslHostConfig.properties]
+ciphers={{ .Values.deploymentToml.transport.https.sslHostConfig.properties.ciphers }}
+
+[transport]
+http.enabled={{ .Values.deploymentToml.transport.http.enabled }}
 
 [super_admin]
 username = {{ .Values.deploymentToml.superAdmin.username | quote }}
@@ -128,6 +138,14 @@ properties.KUBERNETES_NAMESPACE={{ .Release.Namespace | quote }}
 properties.KUBERNETES_SERVICES={{ include "..fullname" . | quote }}
 {{- end }}
 
+[oauth.token_cleanup]
+enable = {{.Values.deploymentToml.oauth.tokenCleanup }}
+
+{{- if .Values.deploymentToml.oauth.enableAssertionsInAccessTokens }}
+[oauth.token_generation]
+include_username_in_access_token = true
+{{- end }}
+
 {{- if .Values.deploymentToml.recaptcha.enabled }}
 #Google reCAPTCHA settings.
 
@@ -147,6 +165,10 @@ username= {{ .Values.deploymentToml.outputAdapter.email.username | quote }}
 password= "$secret{output_adapter_email_password}"
 hostname= {{ .Values.deploymentToml.outputAdapter.email.hostname | quote }}
 port= {{ .Values.deploymentToml.outputAdapter.email.port }}
+{{- end }}
+
+{{- if .Values.deploymentToml.extraConfigs }}
+{{ .Values.deploymentToml.extraConfigs }}
 {{- end }}
 
 # Secure vault encryted secrets
