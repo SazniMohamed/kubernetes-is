@@ -167,8 +167,10 @@ deployment:
         # -- Service Principal created for transacting with the target Azure Key Vault
         # For advanced details refer to official documentation (https://github.com/Azure/secrets-store-csi-driver-provider-azure/blob/master/docs/service-principal-mode.md)
         servicePrincipalAppID: ""
-          # -- Azure Active Directory tenant ID of the target Key Vault
+        # -- Azure Active Directory tenant ID of the target Key Vault
         tenantId: ""
+        # -- Azure Key Vault secret name of the internal keystore password
+        secretName: "INTERNAL-KEYSTORE-PASSWORD-DECRYPTED"
       # -- The name of the Kubernetes secret that contains the service principal credentials to access Azure Key Vault. https://azure.github.io/secrets-store-csi-driver-provider-azure/docs/configurations/identity-access-modes/service-principal-mode/#configure-service-principal-to-access-keyvault
       nodePublishSecretRef: "azure-kv-secret-store-sp"
 

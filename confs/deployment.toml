@@ -158,6 +158,7 @@ database_identity_password = {{ .Values.deploymentToml.database.identity.encrypt
 database_shared_password = {{ .Values.deploymentToml.database.shared.encryptedPassword | quote }}
 database_user_password = {{ .Values.deploymentToml.database.user.encryptedPassword | quote }}
 database_consent_password = {{ .Values.deploymentToml.database.consent.encryptedPassword | quote }}
+database_bps_password = {{ .Values.deploymentToml.database.bps.encryptedPassword | quote }}
 # Keystores
 keystore_tls_password = {{ .Values.deploymentToml.keystore.tls.encryptedPassword | quote }}
 keystore_tls_key_password = {{ .Values.deploymentToml.keystore.tls.encryptedKeyPassword | quote }}

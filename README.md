@@ -176,7 +176,7 @@ export IDENTITY_AUTH_FRAMEWORK_ENDPOINT_ENCRYPTED_APP_PASSWORD='<Encrypted app p
     export IS_HOSTNAME='<IS_HOSTNAME>'
     export SUPER_ADMIN_USERNAME='<SUPER_ADMIN_USERNAME>'
     
-    helm template is-test . -n "${NAMESPACE}" \
+    helm install is-test . -n "${NAMESPACE}" \
     --set deployment.image.registry="${IMAGE_REGISTRY_HOSTNAME}" \
     --set deployment.image.repository="${IMAGE_REPOSITORY_NAME}" \
     --set deployment.image.digest="${IMAGE_DIGEST}" \
