@@ -250,13 +250,12 @@ deploymentToml:
       driver: "com.microsoft.sqlserver.jdbc.SQLServerDriver"
       # -- The database pool options
       poolOptions:
-#        maxActive = "80"
-#        maxWait = "60000"
-#        minIdle = "5"
-#        testOnBorrow = true
-#        validationQuery="SELECT 1"
-#        validationInterval="30000"
-#        defaultAutoCommit=false
+    #        maxActive: "50"
+    #        maxWait: "60000"
+    #        minIdle: "10"
+    #        validationInterval: "30000"
+    #        defaultAutoCommit: true
+    #        commitOnReturn: false
     consent:
       # -- The SQL server type(ex: mysql, mssql)
       type: "mssql"
@@ -270,13 +269,13 @@ deploymentToml:
       driver: "com.microsoft.sqlserver.jdbc.SQLServerDriver"
       # -- The database pool options
       poolOptions:
-        maxActive = "80"
-        maxWait = "60000"
-        minIdle = "5"
-        testOnBorrow = true
-        validationQuery="SELECT 1"
-        validationInterval="30000"
-        defaultAutoCommit=false
+        maxActive: "80"
+        maxWait: "60000"
+        minIdle: "5"
+        testOnBorrow: true
+        validationQuery: "SELECT 1"
+        validationInterval: "30000"
+        defaultAutoCommit: false
     bps:
       # -- The SQL server type(ex: mysql, mssql)
       type: "mssql"
@@ -290,12 +289,12 @@ deploymentToml:
       driver: "com.microsoft.sqlserver.jdbc.SQLServerDriver"
       # -- The database pool options
       poolOptions:
-        maxActive = "50"
-        maxWait = "60000"
-        minIdle = "5"
-        testOnBorrow = true
-        validationInterval = "30000"
-        validationQuery = "SELECT 1; COMMIT"
+        maxActive: "50"
+        maxWait: "60000"
+        minIdle: "5"
+        testOnBorrow: true
+        validationInterval: "30000"
+        validationQuery: "SELECT 1; COMMIT"
   keystore:
     tls:
       fileName: "tls.jks"
