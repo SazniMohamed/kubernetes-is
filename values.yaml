@@ -193,10 +193,12 @@ deploymentToml:
     recovery:
       endpoint:
         auth:
+          # -- Configure client authentication app password hash. Ref https://is.docs.wso2.com/en/latest/deploy/security/product-level-security-guidelines/#configure-client-authentication
           hash: ""
   identity:
     authFramework:
       endpoint:
+        # -- Configure client authentication encrypted app password. Ref https://is.docs.wso2.com/en/latest/deploy/security/product-level-security-guidelines/#configure-client-authentication
         encryptedAppPassword: ""
   clustering:
     # -- Enable clustering

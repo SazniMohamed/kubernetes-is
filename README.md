@@ -4,8 +4,6 @@
 
 A Helm chart for WSO2 Identity server
 
-## Deployment architecture
-
 ## Required permission
 User or service principle who installs the Helm chart, needs to possess actions `"create", "get", "list", "update", "delete"` on following K8s kinds,
 
