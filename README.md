@@ -155,6 +155,7 @@ export IDENTITY_AUTH_FRAMEWORK_ENDPOINT_ENCRYPTED_APP_PASSWORD='<Encrypted app p
     * **<DATABASE_BPS_USER>**: BPS database username
     * **<IS_HOSTNAME>**: Identity server public hostname
     * **<SUPER_ADMIN_USERNAME>**: Identity server super admin username
+    * **<ACCOUNT_RECOVERY_ENDPOINT_AUTH_HASH>**: Identity server super admin username
    
     ```shell
     export IMAGE_REGISTRY_HOSTNAME='<IMAGE_REGISTRY_HOSTNAME>'
@@ -175,12 +176,14 @@ export IDENTITY_AUTH_FRAMEWORK_ENDPOINT_ENCRYPTED_APP_PASSWORD='<Encrypted app p
     export DATABASE_BPS_USER='<DATABASE_BPS_USER>'
     export IS_HOSTNAME='<IS_HOSTNAME>'
     export SUPER_ADMIN_USERNAME='<SUPER_ADMIN_USERNAME>'
-    
+    export ACCOUNT_RECOVERY_ENDPOINT_AUTH_HASH='<ACCOUNT_RECOVERY_ENDPOINT_AUTH_HASH>'
+   
     helm template is-test . -n "${NAMESPACE}" \
     --set deployment.image.registry="${IMAGE_REGISTRY_HOSTNAME}" \
     --set deployment.image.repository="${IMAGE_REPOSITORY_NAME}" \
     --set deployment.image.digest="${IMAGE_DIGEST}" \
     --set deployment.ingress.hostName="${IS_HOSTNAME}" \
+    --set deploymentToml.account.recovery.endpoint.auth.hash="${ACCOUNT_RECOVERY_ENDPOINT_AUTH_HASH}" \
     --set deploymentToml.database.identity.url="${DATABASE_IDENTITY_URL}" \
     --set deploymentToml.database.identity.username="${DATABASE_IDENTITY_USER}" \
     --set deploymentToml.database.identity.encryptedPassword="${DATABASE_IDENTITY_ENCRYPTED_PASSWORD}" \
@@ -227,14 +230,15 @@ export IDENTITY_AUTH_FRAMEWORK_ENDPOINT_ENCRYPTED_APP_PASSWORD='<Encrypted app p
 | deployment.JKSSecretName | string | `"keystores"` | K8s secret name which contains JKS files |
 | deployment.apparmor.profile | string | `"runtime/default"` |  |
 | deployment.buildVersion | string | `"7.0.0-alpha2"` | Product version |
+| deployment.enableCorrelationLogs | bool | `false` | Enable correlation logs |
 | deployment.extraVolumeMounts | list | `[]` | Additional volumeMounts to the pods. All the configuration mounts should be done under the path "/home/wso2carbon/wso2-config-volume/" |
 | deployment.extraVolumes | list | `[]` | Additional volumes to the pod. |
 | deployment.hpa.averageUtilizationCPU | int | `65` | Average CPU utilization for HPA |
 | deployment.hpa.averageUtilizationMemory | int | `75` | averageUtilizationMemory parameter should be greater than 75 if not un expected scaling will happen during rolling update. |
 | deployment.hpa.enabled | bool | `false` | Enable HPA for the deployment |
-| deployment.hpa.maxReplicas | int | `2` | Max replica count for HPA(https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) |
+| deployment.hpa.maxReplicas | int | `2` | Max replica count for HPA(Ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) |
 | deployment.image.digest | string | `""` | Container image digest |
-| deployment.image.pullPolicy | string | `"Always"` | Refer to the Kubernetes documentation on updating images (https://kubernetes.io/docs/concepts/containers/images/#updating-images) |
+| deployment.image.pullPolicy | string | `"Always"` | Refer to the Kubernetes documentation on updating images (Ref: https://kubernetes.io/docs/concepts/containers/images/#updating-images) |
 | deployment.image.registry | string | `""` | Container image registry host name |
 | deployment.image.repository | string | `""` | Container image repository name |
 | deployment.ingress.annotations."nginx.ingress.kubernetes.io/affinity" | string | `"cookie"` |  |
@@ -271,16 +275,17 @@ export IDENTITY_AUTH_FRAMEWORK_ENDPOINT_ENCRYPTED_APP_PASSWORD='<Encrypted app p
 | deployment.resources.jvm.memOpts | string | `"-Xms2048m -Xmx2048m"` | JVM memory options |
 | deployment.resources.limits.cpu | string | `"3"` | The maximum amount of CPU that should be allocated for a Pod |
 | deployment.resources.limits.memory | string | `"4Gi"` | The maximum amount of memory that should be allocated for a Pod |
-| deployment.resources.requests | object | `{"cpu":"2","memory":"2Gi"}` | as per official documentation (https://is.docs.wso2.com/en/latest/setup/installation-prerequisites/) |
+| deployment.resources.requests | object | `{"cpu":"2","memory":"2Gi"}` | as per official documentation (Ref: https://is.docs.wso2.com/en/latest/setup/installation-prerequisites/) |
 | deployment.resources.requests.cpu | string | `"2"` | The minimum amount of CPU that should be allocated for a Pod |
 | deployment.resources.requests.memory | string | `"2Gi"` | The minimum amount of memory that should be allocated for a Pod |
 | deployment.secretStore.azure.enabled | bool | `true` | Enable Azure Key Vault integration. |
 | deployment.secretStore.azure.keyVault.name | string | `""` | Name of the target Azure Key Vault instance |
 | deployment.secretStore.azure.keyVault.resourceGroup | string | `""` | Name of the Azure Resource Group to which the target Azure Key Vault belongs |
-| deployment.secretStore.azure.keyVault.servicePrincipalAppID | string | `""` | Service Principal created for transacting with the target Azure Key Vault For advanced details refer to official documentation (https://github.com/Azure/secrets-store-csi-driver-provider-azure/blob/master/docs/service-principal-mode.md) |
+| deployment.secretStore.azure.keyVault.secretName | string | `"INTERNAL-KEYSTORE-PASSWORD-DECRYPTED"` | Azure Key Vault secret name of the internal keystore password |
+| deployment.secretStore.azure.keyVault.servicePrincipalAppID | string | `""` | Service Principal created for transacting with the target Azure Key Vault Ref: https://github.com/Azure/secrets-store-csi-driver-provider-azure/blob/master/docs/service-principal-mode.md |
 | deployment.secretStore.azure.keyVault.subscriptionId | string | `""` | Subscription ID of the target Azure Key Vault |
 | deployment.secretStore.azure.keyVault.tenantId | string | `""` | Azure Active Directory tenant ID of the target Key Vault |
-| deployment.secretStore.azure.nodePublishSecretRef | string | `"azure-kv-secret-store-sp"` | The name of the Kubernetes secret that contains the service principal credentials to access Azure Key Vault. https://azure.github.io/secrets-store-csi-driver-provider-azure/docs/configurations/identity-access-modes/service-principal-mode/#configure-service-principal-to-access-keyvault |
+| deployment.secretStore.azure.nodePublishSecretRef | string | `"azure-kv-secret-store-sp"` | The name of the Kubernetes secret that contains the service principal credentials to access Azure Key Vault. Ref: https://azure.github.io/secrets-store-csi-driver-provider-azure/docs/configurations/identity-access-modes/service-principal-mode/#configure-service-principal-to-access-keyvault |
 | deployment.securityContext.runAsUser | int | `10001` | Run as user ID |
 | deployment.securityContext.seccompProfile.type | string | `"RuntimeDefault"` | Seccomp profile type |
 | deployment.startupProbe | object | `{"failureThreshold":30,"initialDelaySeconds":60,"periodSeconds":5}` | Startup probe executed prior to Liveness Probe taking over |
@@ -291,40 +296,41 @@ export IDENTITY_AUTH_FRAMEWORK_ENDPOINT_ENCRYPTED_APP_PASSWORD='<Encrypted app p
 | deployment.strategy.rollingUpdate.maxUnavailable | int | `0` | The maximum number of pods that can be unavailable during the update |
 | deployment.terminationGracePeriodSeconds | int | `40` | Pod termination grace period. K8s API server waits this period after pre stop hook and sending TERM signal |
 | deploymentToml.account.recovery.endpoint.auth.hash | string | `""` |  |
-| deploymentToml.clustering.domain | string | `"wso2.is.domain"` |  |
-| deploymentToml.clustering.enabled | bool | `true` |  |
+| deploymentToml.clustering.domain | string | `"wso2.is.domain"` | Cluster domain |
+| deploymentToml.clustering.enabled | bool | `true` | Enable clustering |
 | deploymentToml.clustering.localMemberPort | string | `"4001"` | This defines local member port |
 | deploymentToml.clustering.membershipScheme | string | `"kubernetes"` | This defines membership schema type |
 | deploymentToml.database.bps.driver | string | `"com.microsoft.sqlserver.jdbc.SQLServerDriver"` | The database JDBC driver |
 | deploymentToml.database.bps.encryptedPassword | string | `""` | The secure vault encrypted database password |
-| deploymentToml.database.bps.poolOptions | string | `"maxActive = \"50\" maxWait = \"60000\" minIdle = \"5\" testOnBorrow = true validationInterval = \"30000\" validationQuery = \"SELECT 1; COMMIT\""` | The database pool options |
+| deploymentToml.database.bps.poolOptions | object | `{"maxActive":"50","maxWait":"60000","minIdle":"5","testOnBorrow":true,"validationInterval":"30000","validationQuery":"SELECT 1; COMMIT"}` | The database pool options |
 | deploymentToml.database.bps.type | string | `"mssql"` | The SQL server type(ex: mysql, mssql) |
 | deploymentToml.database.bps.url | string | `""` | The database JDBC URL |
 | deploymentToml.database.bps.username | string | `""` | The database username |
 | deploymentToml.database.consent.driver | string | `"com.microsoft.sqlserver.jdbc.SQLServerDriver"` | The database JDBC driver |
 | deploymentToml.database.consent.encryptedPassword | string | `""` | The secure vault encrypted database password |
-| deploymentToml.database.consent.poolOptions | string | `"maxActive = \"80\" maxWait = \"60000\" minIdle = \"5\" testOnBorrow = true validationQuery=\"SELECT 1\" validationInterval=\"30000\" defaultAutoCommit=false"` | The database pool options |
+| deploymentToml.database.consent.poolOptions | object | `{"defaultAutoCommit":false,"maxActive":"80","maxWait":"60000","minIdle":"5","testOnBorrow":true,"validationInterval":"30000","validationQuery":"SELECT 1"}` | The database pool options |
 | deploymentToml.database.consent.type | string | `"mssql"` | The SQL server type(ex: mysql, mssql) |
 | deploymentToml.database.consent.url | string | `""` | The database JDBC URL |
 | deploymentToml.database.consent.username | string | `""` | The database username |
 | deploymentToml.database.identity.driver | string | `"com.microsoft.sqlserver.jdbc.SQLServerDriver"` | The database JDBC driver |
 | deploymentToml.database.identity.encryptedPassword | string | `""` | The secure vault encrypted database password |
-| deploymentToml.database.identity.poolOptions | string | `nil` | The database pool options |
+| deploymentToml.database.identity.poolOptions | object | `{"commitOnReturn":false,"defaultAutoCommit":true,"maxActive":"50","maxWait":"60000","minIdle":"10","validationInterval":"30000"}` | The database pool options |
 | deploymentToml.database.identity.type | string | `"mssql"` | The SQL server type(ex: mysql, mssql) |
 | deploymentToml.database.identity.url | string | `""` | The database JDBC URL |
 | deploymentToml.database.identity.username | string | `""` | The database username |
 | deploymentToml.database.shared.driver | string | `"com.microsoft.sqlserver.jdbc.SQLServerDriver"` | The database JDBC driver |
 | deploymentToml.database.shared.encryptedPassword | string | `""` | The secure vault encrypted database password |
-| deploymentToml.database.shared.poolOptions | string | `nil` | The database pool options |
+| deploymentToml.database.shared.poolOptions | object | `{"commitOnReturn":false,"defaultAutoCommit":true,"maxActive":"50","maxWait":"60000","minIdle":"10","validationInterval":"30000"}` | The database pool options |
 | deploymentToml.database.shared.type | string | `"mssql"` | The SQL server type(ex: mysql, mssql) |
 | deploymentToml.database.shared.url | string | `""` | The database JDBC URL |
 | deploymentToml.database.shared.username | string | `""` | The database username |
 | deploymentToml.database.user.driver | string | `"com.microsoft.sqlserver.jdbc.SQLServerDriver"` | The database JDBC driver |
 | deploymentToml.database.user.encryptedPassword | string | `""` | The secure vault encrypted database password |
-| deploymentToml.database.user.poolOptions | string | `nil` | The database pool options |
+| deploymentToml.database.user.poolOptions | object | `{"commitOnReturn":false,"defaultAutoCommit":true,"maxActive":"50","maxWait":"60000","minIdle":"10","validationInterval":"30000"}` | The database pool options |
 | deploymentToml.database.user.type | string | `"mssql"` | The SQL server type(ex: mysql, mssql) |
 | deploymentToml.database.user.url | string | `""` | The database JDBC URL |
 | deploymentToml.database.user.username | string | `""` | The database username |
+| deploymentToml.extraConfigs | string | `nil` | Add custom configurations to deployment.toml. |
 | deploymentToml.identity.authFramework.endpoint.encryptedAppPassword | string | `""` |  |
 | deploymentToml.keystore.internal.alias | string | `"wso2carbon"` |  |
 | deploymentToml.keystore.internal.encryptedKeyPassword | string | `""` |  |
@@ -341,6 +347,10 @@ export IDENTITY_AUTH_FRAMEWORK_ENDPOINT_ENCRYPTED_APP_PASSWORD='<Encrypted app p
 | deploymentToml.keystore.tls.encryptedPassword | string | `""` |  |
 | deploymentToml.keystore.tls.fileName | string | `"tls.jks"` |  |
 | deploymentToml.keystore.tls.type | string | `"JKS"` |  |
+| deploymentToml.oauth.tokenCleanup | bool | `false` | Enable/Disable the internal token cleanup process. Ref: https://is.docs.wso2.com/en/6.0.0/deploy/remove-unused-tokens-from-the-database/#! |
+| deploymentToml.oauth.tokenGeneration.includeUsernameInAccessToken | bool | `false` | Add UserName Assertions in Access Tokens. Ref: https://is.docs.wso2.com/en/6.0.0/deploy/enable-assertions-in-access-tokens/ |
+| deploymentToml.outputAdapter.email.enableAuthentication | bool | `true` |  |
+| deploymentToml.outputAdapter.email.enableStartTls | bool | `true` |  |
 | deploymentToml.outputAdapter.email.enabled | bool | `false` |  |
 | deploymentToml.outputAdapter.email.encryptedPassword | string | `""` |  |
 | deploymentToml.outputAdapter.email.fromAddress | string | `""` |  |
@@ -352,13 +362,25 @@ export IDENTITY_AUTH_FRAMEWORK_ENDPOINT_ENCRYPTED_APP_PASSWORD='<Encrypted app p
 | deploymentToml.recaptcha.encryptedSecretKey | string | `""` |  |
 | deploymentToml.recaptcha.encryptedSiteKey | string | `""` |  |
 | deploymentToml.recaptcha.verifyUrl | string | `""` |  |
-| deploymentToml.server.offset | string | `"0"` | Change default ports(https://is.docs.wso2.com/en/latest/references/default-ports-of-wso2-products/#:~:text=For%20each%20additional%20WSO2%20product,to%20the%20server%20during%20startup.) |
-| deploymentToml.superAdmin.createAdminAccount | bool | `true` |  |
-| deploymentToml.superAdmin.encryptedPassword | string | `""` |  |
-| deploymentToml.superAdmin.username | string | `""` |  |
+| deploymentToml.server.offset | string | `"0"` | Change default ports(Ref: https://is.docs.wso2.com/en/latest/references/default-ports-of-wso2-products/#:~:text=For%20each%20additional%20WSO2%20product,to%20the%20server%20during%20startup.) |
+| deploymentToml.superAdmin.createAdminAccount | bool | `true` | Create Carbon console admin account |
+| deploymentToml.superAdmin.encryptedPassword | string | `""` | Carbon console admin account password |
+| deploymentToml.superAdmin.username | string | `""` | Carbon console admin account username |
+| deploymentToml.transport.https.properties.server | string | `"WSO2 Carbon Server"` | Server name in HTTP response headers. Ref: https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#change-the-server-name-in-http-response-headers |
+| deploymentToml.transport.https.sslHostConfig.properties.ciphers | string | `"TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384, TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384, TLS_DHE_DSS_WITH_AES_256_GCM_SHA384, TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256, TLS_DHE_DSS_WITH_AES_128_GCM_SHA256, TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384, TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384, TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384, TLS_DHE_DSS_WITH_AES_256_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA, TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA, TLS_ECDH_RSA_WITH_AES_256_CBC_SHA, TLS_DHE_DSS_WITH_AES_256_CBC_SHA, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256, TLS_DHE_DSS_WITH_AES_128_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA, TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA, TLS_ECDH_RSA_WITH_AES_128_CBC_SHA, TLS_DHE_DSS_WITH_AES_128_CBC_SHA, TLS_EMPTY_RENEGOTIATION_INFO_SCSVF"` | Configure TSL ciphers in the HTTPS transport. Ref: https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#disable-weak-ciphers |
+| deploymentToml.transport.https.sslHostConfig.properties.protocols | string | `"+TLSv1, +TLSv1.1, +TLSv1.2, +TLSv1.3"` | Enabling SSL protocols in the HTTPS transport. Ref: https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#enabling-ssl-protocols-in-the-wso2-is |
+| deploymentToml.transport.thrift.ciphers | string | `"TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384,TLS_DHE_DSS_WITH_AES_256_GCM_SHA384,TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_DSS_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384,TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,TLS_DHE_DSS_WITH_AES_256_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA,TLS_ECDH_RSA_WITH_AES_256_CBC_SHA,TLS_DHE_DSS_WITH_AES_256_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA,TLS_ECDH_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_DSS_WITH_AES_128_CBC_SHA"` | Configure TSL ciphers in ThriftAuthenticationService. Ref: https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#enable-ssl-protocols-and-ciphers-in-thriftauthenticationservice |
+| deploymentToml.transport.thrift.protocols | string | `"TLSv1,TLSv1.1,TLSv1.2"` | Enabling SSL protocols in ThriftAuthenticationService. Ref: https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#enable-ssl-protocols-and-ciphers-in-thriftauthenticationservice |
 | deploymentToml.truststore.encryptedPassword | string | `""` |  |
 | deploymentToml.truststore.fileName | string | `"client-truststore.jks"` |  |
 | deploymentToml.truststore.type | string | `"JKS"` |  |
+| deploymentToml.userAccountLock.enabled | bool | `true` | Enable user account lock. Ref: https://is.docs.wso2.com/en/latest/guides/identity-lifecycles/lock-account/ |
+| deploymentToml.userAccountLock.loginAttempts.allowedFailedAttempts | int | `5` | This indicates the number of consecutive attempts that a user can try to log in without the account getting locked. If the value you specify is 2, the account gets locked if the login attempt fails twice. |
+| deploymentToml.userAccountLock.loginAttempts.autoUnlockAfter | int | `5` | The time specified here is in minutes. Authentication can be attempted once this time has passed. |
+| deploymentToml.userAccountLock.loginAttempts.autoUnlockTimeIncrementRatio | int | `2` | This indicates how much the account unlock timeout is incremented by after each failed login attempt |
+| deploymentToml.userAccountLock.otp.emailEnabled | bool | `false` | Enable account locking by email OTP. Ref: https://is.docs.wso2.com/en/latest/guides/identity-lifecycles/lock-accounts-by-failed-otp-attempts/ |
+| deploymentToml.userAccountLock.otp.smsEnabled | bool | `false` | Enable account locking by SMS otp. Ref: https://is.docs.wso2.com/en/latest/guides/identity-lifecycles/lock-accounts-by-failed-otp-attempts/ |
+| deploymentToml.userAccountLock.totpEnabled | bool | `false` | Enable account locking by OTP. Ref: https://is.docs.wso2.com/en/latest/guides/identity-lifecycles/lock-accounts-by-failed-otp-attempts/ |
 | deploymentToml.userStore.type | string | `"database_unique_id"` |  |
 | k8sKindAPIVersions | object | `{"configMap":"v1","deployment":"apps/v1","horizontalPodAutoscaler":"autoscaling/v1","ingress":"networking.k8s.io/v1","persistentVolume":"v1","persistentVolumeClaim":"v1","podDisruptionBudget":"policy/v1","role":"rbac.authorization.k8s.io/v1","roleBinding":"rbac.authorization.k8s.io/v1","secret":"v1","secretProviderClass":"secrets-store.csi.x-k8s.io/v1","service":"v1","serviceAccount":"v1"}` | K8s API versions for K8s kinds |
 | k8sKindAPIVersions.configMap | string | `"v1"` | K8s API version for kind ConfigMap |

@@ -10,12 +10,7 @@ server = {{ .Values.deploymentToml.transport.https.properties.server | quote }}
 
 [transport.https.sslHostConfig.properties]
 protocols={{ .Values.deploymentToml.transport.https.sslHostConfig.properties.protocols | quote }}
-
-[transport.https.sslHostConfig.properties]
 ciphers={{ .Values.deploymentToml.transport.https.sslHostConfig.properties.ciphers | quote }}
-
-[transport]
-http.enabled={{ .Values.deploymentToml.transport.http.enabled }}
 
 [super_admin]
 username = {{ .Values.deploymentToml.superAdmin.username | quote }}
@@ -129,6 +124,7 @@ hash= {{ .Values.deploymentToml.account.recovery.endpoint.auth.hash | quote }}
 [identity.auth_framework.endpoint]
 app_password= "$secret{app_password}"
 
+
 {{- if .Values.deploymentToml.clustering.enabled }}
 [clustering]
 membership_scheme={{.Values.deploymentToml.clustering.membershipScheme | quote }}
@@ -143,6 +139,19 @@ enable = {{.Values.deploymentToml.oauth.tokenCleanup }}
 
 [oauth.token_generation]
 include_username_in_access_token = {{.Values.deploymentToml.oauth.tokenGeneration.includeUsernameInAccessToken }}
+
+# Block all unused fileupload with super tenant permissions (SECURITYINTERNAL-1738)
+[[resource.access_control]]
+context="(.*)/fileupload/service(.*)"
+secure=true
+http_method = "all"
+permissions = ["/permission/admin/manage/identity/applicationmgt/create"]
+
+[[resource.access_control]]
+context="(.*)/fileupload(.*)"
+secure=true
+http_method = "all"
+permissions = ["/permission/protected/manage/monitor/tenants"]
 
 {{- if .Values.deploymentToml.recaptcha.enabled }}
 #Google reCAPTCHA settings.
@@ -163,6 +172,41 @@ username= {{ .Values.deploymentToml.outputAdapter.email.username | quote }}
 password= "$secret{output_adapter_email_password}"
 hostname= {{ .Values.deploymentToml.outputAdapter.email.hostname | quote }}
 port= {{ .Values.deploymentToml.outputAdapter.email.port }}
+enable_start_tls= {{ .Values.deploymentToml.outputAdapter.email.enableStartTls }}
+enableAuthentication= {{ .Values.deploymentToml.outputAdapter.email.enableAuthentication }}
+{{- end }}
+
+# Configuring user account locking. Ref: https://is.docs.wso2.com/en/latest/guides/identity-lifecycles/lock-account/
+{{- if .Values.deploymentToml.userAccountLock.enabled }}
+[event.default_listener.identity_mgt]
+priority= "50"
+enable = false
+[event.default_listener.governance_identity_mgt]
+priority= "95"
+enable = true
+
+[identity_mgt.account_locking]
+allowed_failed_attempts={{ .Values.deploymentToml.userAccountLock.loginAttempts.allowedFailedAttempts }}
+auto_unlock_time_increment_ratio={{ .Values.deploymentToml.userAccountLock.loginAttempts.autoUnlockTimeIncrementRatio }}
+auto_unlock_after={{ .Values.deploymentToml.userAccountLock.loginAttempts.autoUnlockAfter }}
+enable_account_locking=true
+
+{{- if .Values.deploymentToml.userAccountLock.otp.emailEnabled }}
+[authentication.authenticator.email_otp.parameters]
+EnableAccountLockingForFailedAttempts = true
+{{- end }}
+
+{{- if .Values.deploymentToml.userAccountLock.otp.smsEnabled }}
+[authentication.authenticator.sms_otp.parameters]
+EnableAccountLockingForFailedAttempts = true
+EnableAccountLockingForFailedAttempts = true
+{{- end }}
+
+{{- if .Values.deploymentToml.userAccountLock.totpEnabled }}
+[authentication.authenticator.totp.parameters]
+EnableAccountLockingForFailedAttempts = true
+{{- end }}
+
 {{- end }}
 
 {{- if .Values.deploymentToml.extraConfigs }}

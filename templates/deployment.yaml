@@ -36,6 +36,7 @@ spec:
         checksum.secret.properties: {{ include (print $.Template.BasePath "/cm-secret-config-properties.yaml") . | sha256sum }}
         checksum.log4j.properties: {{ include (print $.Template.BasePath "/cm-log4j2-properties.yaml") . | sha256sum }}
         checksum.entrypoint.sh: {{ include (print $.Template.BasePath "/cm-entrypoint.yaml") . | sha256sum }}
+        checksum.thrift-authentication.xml: {{ include (print $.Template.BasePath "/cm-thrift-authentication-xml.yaml") . | sha256sum }}
         container.apparmor.security.beta.kubernetes.io/wso2is: {{ .Values.deployment.apparmor.profile }}
     spec:
       securityContext:
@@ -62,6 +63,11 @@ spec:
       containers:
         - name: wso2is
           image: {{ .Values.deployment.image.registry }}/{{ .Values.deployment.image.repository }}@{{ .Values.deployment.image.digest }}
+          args:
+            - "-Dorg.wso2.CipherTransformation=AES/GCM/NoPadding"
+            {{- if .Values.deployment.enableCorrelationLogs }}
+            - "-DenableCorrelationLogs=true"
+            {{- end }}
           startupProbe:
             exec:
               command:
@@ -127,6 +133,9 @@ spec:
             - name: {{ template "..fullname" . }}-deployment-toml
               mountPath: /home/wso2carbon/wso2-config-volume/repository/conf/deployment.toml
               subPath: deployment.toml
+            - name: {{ template "..fullname" . }}-thrift-authentication-xml
+              mountPath: /home/wso2carbon/wso2-config-volume/repository/conf/identity/thrift-authentication.xml
+              subPath: thrift-authentication.xml
             - name: {{ template "..fullname" . }}-secret-config-properties
               mountPath: /home/wso2carbon/wso2-config-volume/repository/conf/security/secret-conf.properties
               subPath: secret-conf.properties
@@ -170,6 +179,9 @@ spec:
         - name: {{ template "..fullname" . }}-deployment-toml
           configMap:
             name: {{ template "..fullname" . }}-deployment-toml
+        - name: {{ template "..fullname" . }}-thrift-authentication-xml
+          configMap:
+            name: {{ template "..fullname" . }}-thrift-authentication-xml
         - name: {{ template "..fullname" . }}-log4j2-properties
           configMap:
             name: {{ template "..fullname" . }}-log4j2-properties
