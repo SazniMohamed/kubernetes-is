@@ -243,8 +243,8 @@ export NAMESPACE=<NAMESPACE>
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | deployment.JKSSecretName | string | `"keystores"` | K8s secret name which contains JKS files |
-| deployment.apparmor.profile | string | `"runtime/default"` |  |
-| deployment.buildVersion | string | `"7.0.0-alpha2"` | Product version |
+| deployment.apparmor.profile | string | `"runtime/default"` | Apparmor profile |
+| deployment.buildVersion | string | `"7.0.0-beta"` | Product version |
 | deployment.enableCorrelationLogs | bool | `false` | Enable correlation logs |
 | deployment.extraVolumeMounts | list | `[]` | Additional volumeMounts to the pods. All the configuration mounts should be done under the path "/home/wso2carbon/wso2-config-volume/" |
 | deployment.extraVolumes | list | `[]` | Additional volumes to the pod. |
@@ -272,6 +272,7 @@ export NAMESPACE=<NAMESPACE>
 | deployment.ingress.tlsSecretsName | string | `"is-tls"` | K8s TLS secret for configured hostname |
 | deployment.livenessProbe | object | `{"periodSeconds":10}` | Indicates whether the container is running |
 | deployment.livenessProbe.periodSeconds | int | `10` | How often (in seconds) to perform the probe |
+| deployment.pdb.minAvailable | string | `"50%"` | Minimum availability for PDB |
 | deployment.persistence.azure.enabled | bool | `true` | Enable persistence for artifact sharing using Azure file share |
 | deployment.persistence.azure.fileShare | string | `"is"` | Names of Azure File shares for persisted data |
 | deployment.persistence.azure.secretName | string | `"azure-storage-csi"` | K8s secret name for the Azure file share CI driver  |
@@ -310,9 +311,9 @@ export NAMESPACE=<NAMESPACE>
 | deployment.strategy.rollingUpdate.maxSurge | int | `1` | The maximum number of pods that can be scheduled above the desired number of pods |
 | deployment.strategy.rollingUpdate.maxUnavailable | int | `0` | The maximum number of pods that can be unavailable during the update |
 | deployment.terminationGracePeriodSeconds | int | `40` | Pod termination grace period. K8s API server waits this period after pre stop hook and sending TERM signal |
-| deploymentToml.account.recovery.endpoint.auth.hash | string | `""` |  |
+| deploymentToml.account.recovery.endpoint.auth.hash | string | `""` | Configure client authentication app password hash. Ref https://is.docs.wso2.com/en/latest/deploy/security/product-level-security-guidelines/#configure-client-authentication |
 | deploymentToml.clustering.domain | string | `"wso2.is.domain"` | Cluster domain |
-| deploymentToml.clustering.enabled | bool | `true` | Enable clustering |
+| deploymentToml.clustering.enabled | bool | `true` | Enable clustering. Ref: https://is.docs.wso2.com/en/latest/deploy/configure-hazelcast/ |
 | deploymentToml.clustering.localMemberPort | string | `"4001"` | This defines local member port |
 | deploymentToml.clustering.membershipScheme | string | `"kubernetes"` | This defines membership schema type |
 | deploymentToml.database.bps.driver | string | `"com.microsoft.sqlserver.jdbc.SQLServerDriver"` | The database JDBC driver |
@@ -346,7 +347,7 @@ export NAMESPACE=<NAMESPACE>
 | deploymentToml.database.user.url | string | `""` | The database JDBC URL |
 | deploymentToml.database.user.username | string | `""` | The database username |
 | deploymentToml.extraConfigs | string | `nil` | Add custom configurations to deployment.toml. |
-| deploymentToml.identity.authFramework.endpoint.encryptedAppPassword | string | `""` |  |
+| deploymentToml.identity.authFramework.endpoint.encryptedAppPassword | string | `""` | Configure client authentication encrypted app password. Ref https://is.docs.wso2.com/en/latest/deploy/security/product-level-security-guidelines/#configure-client-authentication |
 | deploymentToml.keystore.internal.alias | string | `"wso2carbon"` |  |
 | deploymentToml.keystore.internal.encryptedKeyPassword | string | `""` |  |
 | deploymentToml.keystore.internal.encryptedPassword | string | `""` |  |
@@ -366,14 +367,14 @@ export NAMESPACE=<NAMESPACE>
 | deploymentToml.oauth.tokenGeneration.includeUsernameInAccessToken | bool | `false` | Add UserName Assertions in Access Tokens. Ref: https://is.docs.wso2.com/en/6.0.0/deploy/enable-assertions-in-access-tokens/ |
 | deploymentToml.outputAdapter.email.enableAuthentication | bool | `true` |  |
 | deploymentToml.outputAdapter.email.enableStartTls | bool | `true` |  |
-| deploymentToml.outputAdapter.email.enabled | bool | `false` |  |
+| deploymentToml.outputAdapter.email.enabled | bool | `false` | Enable the email sender. Ref: https://is.docs.wso2.com/en/latest/deploy/configure-email-sending/#configure-the-email-sender-globally |
 | deploymentToml.outputAdapter.email.encryptedPassword | string | `""` |  |
 | deploymentToml.outputAdapter.email.fromAddress | string | `""` |  |
 | deploymentToml.outputAdapter.email.hostname | string | `""` |  |
 | deploymentToml.outputAdapter.email.port | int | `587` |  |
 | deploymentToml.outputAdapter.email.username | string | `""` |  |
 | deploymentToml.recaptcha.apiUrl | string | `""` |  |
-| deploymentToml.recaptcha.enabled | bool | `false` |  |
+| deploymentToml.recaptcha.enabled | bool | `false` | Enable reCAPTCHA. Ref: https://is.docs.wso2.com/en/latest/deploy/configure-recaptcha/ |
 | deploymentToml.recaptcha.encryptedSecretKey | string | `""` |  |
 | deploymentToml.recaptcha.encryptedSiteKey | string | `""` |  |
 | deploymentToml.recaptcha.verifyUrl | string | `""` |  |

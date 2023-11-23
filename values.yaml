@@ -11,6 +11,7 @@
 
 deployment:
   apparmor:
+    # -- Apparmor profile
     profile: "runtime/default"
   ingress:
     # -- Host name of the Identity server as Key Manager
@@ -83,6 +84,9 @@ deployment:
     averageUtilizationCPU: 65
     # -- averageUtilizationMemory parameter should be greater than 75 if not un expected scaling will happen during rolling update.
     averageUtilizationMemory: 75
+  pdb:
+    # -- Minimum availability for PDB
+    minAvailable: "50%"
   strategy:
     rollingUpdate:
       # -- The maximum number of pods that can be scheduled above the desired number of pods
@@ -129,7 +133,7 @@ deployment:
         -Dhttpclient.hostnameVerifier=Strict -Djdk.tls.client.protocols=TLSv1.2
         -Djava.util.prefs.systemRoot=/home/wso2carbon/.java -Djava.util.prefs.userRoot=/home/wso2carbon/.java/.userPrefs
   # -- Product version
-  buildVersion: "7.0.0-alpha2"
+  buildVersion: "7.0.0-beta"
   # -- Product pack name
   productPackName: "wso2is"
   # -- Enable correlation logs
@@ -201,7 +205,7 @@ deploymentToml:
         # -- Configure client authentication encrypted app password. Ref https://is.docs.wso2.com/en/latest/deploy/security/product-level-security-guidelines/#configure-client-authentication
         encryptedAppPassword: ""
   clustering:
-    # -- Enable clustering
+    # -- Enable clustering. Ref: https://is.docs.wso2.com/en/latest/deploy/configure-hazelcast/
     enabled: true
     # -- Cluster domain
     domain: "wso2.is.domain"
@@ -330,6 +334,7 @@ deploymentToml:
     type: "JKS"
     encryptedPassword: ""
   recaptcha:
+    # -- Enable reCAPTCHA. Ref: https://is.docs.wso2.com/en/latest/deploy/configure-recaptcha/
     enabled: false
     apiUrl: ""
     verifyUrl: ""
@@ -337,6 +342,7 @@ deploymentToml:
     encryptedSecretKey: ""
   outputAdapter:
     email:
+     # -- Enable the email sender. Ref: https://is.docs.wso2.com/en/latest/deploy/configure-email-sending/#configure-the-email-sender-globally
      enabled: false
      fromAddress: ""
      username: ""

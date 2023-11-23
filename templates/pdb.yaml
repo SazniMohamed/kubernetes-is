@@ -15,7 +15,7 @@ kind: PodDisruptionBudget
 metadata:
   name: {{ template "..fullname" . }}
 spec:
-  minAvailable: "50%"
+  minAvailable: {{ .Values.deployment.pdb.minAvailable | quote }}
   selector:
     matchLabels:
       {{- include "..selectorLabels" . | nindent 6 }}
