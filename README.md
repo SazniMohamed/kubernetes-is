@@ -231,7 +231,8 @@ export NAMESPACE=<NAMESPACE>
     --set deployment.secretStore.azure.keyVault.subscriptionId="${AZURE_SUBSCRIPTION_ID}" \
     --set deployment.secretStore.azure.keyVault.tenantId="${AZURE_TENANT_ID}" 
     ```
-
+    
+    > If it is required to add additional configuration other than what are parameterised in `deployment.toml` file, you can override the Helm value `deploymentToml.extraConfigs`
 ## Compatibility
 
 | Kubernetes Version | Helm Version | Secrets Store CSI Driver Version | Compatibility Notes                  |
