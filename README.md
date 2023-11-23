@@ -42,99 +42,114 @@ export NAMESPACE=<NAMESPACE>
     ```shell
     kubectl get namespace ${NAMESPACE} || kubectl create namespace ${NAMESPACE}
     ```
-2.Configure rate limiting configuration 
-   Need to configure rate limiting zone configuration under [http-snippet](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/#http-snippet) in [Kubernetes Nginx ingress controller](https://github.com/kubernetes/ingress-nginx)
 
-   ```yaml
-   http-snippet: |-
+2. Configure rate limiting configuration 
+   
+    Need to configure rate limiting zone configuration under [http-snippet](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/configmap/#http-snippet) in [Kubernetes Nginx ingress controller](https://github.com/kubernetes/ingress-nginx)
+
+    ```yaml
+    http-snippet: |-
      limit_req_zone rate_limit_zone_is zone=is:10m rate=150r/s;
-   ```
+    ```
    
 3. Create a Kubernetes TLS secret for SSL termination at ingress controller. For this you need possess the SSL certificate and the key,
-   ```shell
-   kubectl create secret tls is-tls \
-   --cert=path/to/cert/file \
-   --key=path/to/key/file \
-   -n ${NAMESPACE}
-   ```
-   
-3. Create a Kubernetes secret for keystore files. It is required to have four Java keystore files for the deployment. Please refer to the [documentation](https://is.docs.wso2.com/en/latest/deploy/security/configure-keystores-in-wso2-products/#configure-keystores) for more details and how to create key stores.
-
-* Internal keystore(internal.jks): The key store which is used for encrypting/decrypting internal data
-* Primary keystore(primary.jks): Certificates used for signing messages that are communicated with external parties(such SAML, OIDC id_token signing)
-* TLS keystore(tls.jks): The key store which is used for tls communication.
-* Client truststore(client-truststore.jks): Certificates of trusted third parties
-
-   ```shell
-   kubectl create secret generic keystores \
-   --from-file=internal.jks \
-   --from-file=primary.jks \
-   --from-file=tls.jks \
-   --from-file=client-truststore.jks \
-   -n ${NAMESPACE}
-   ```
-  
-4. Create [Azure storage account secret](https://learn.microsoft.com/en-us/azure/aks/azure-csi-files-storage-provision#create-a-kubernetes-secret) for persistence volume.
-   Replace `<AZURE_STORAGE_NAME>` with Azure storage account name and `<AZURE_STORAGE_KEY>` with Azure storage account access key.
-  ```shell
-   export AZURE_STORAGE_NAME='<AZURE_STORAGE_NAME>'
-   export AZURE_STORAGE_KEY='<AZURE_STORAGE_KEY>'
-   kubectl create secret generic azure-storage-csi \
-   --from-literal=azurestorageaccountname="${AZURE_STORAGE_NAME}" \
-   --from-literal=azurestorageaccountkey="${AZURE_STORAGE_KEY}" \
-   -n ${NAMESPACE}
-   ```
-
-6. Configure Azure key vault 
- - Add `internal.jks` keystore password as the secret with the name `INTERNAL-KEYSTORE-PASSWORD-DECRYPTED`. Replace `<AZURE_KEY_VAULT_NAME>` with Azure Key vault name, `<AZURE_SUBSCRIPTION_ID>` with Azure subscription ID and `<INTERNAL_KEYSTORE_PASSWORD_DECRYPTED>` with internal keystore(`internal.jks`) password.
 
     ```shell
-    export AZURE_KEY_VAULT_NAME='<AZURE_KEY_VAULT_NAME>'
-    export AZURE_SUBSCRIPTION_ID='<AZURE_SUBSCRIPTION_ID>'
-    export INTERNAL_KEYSTORE_PASSWORD_DECRYPTED='<INTERNAL_KEYSTORE_PASSWORD_DECRYPTED>'
-    
-    az login
-    az account set -s "${AZURE_SUBSCRIPTION_ID}"
-    az keyvault secret set --vault-name "${AZURE_KEY_VAULT_NAME}" --name "INTERNAL-KEYSTORE-PASSWORD-DECRYPTED" --value "${INTERNAL_KEYSTORE_PASSWORD_DECRYPTED}"
+    kubectl create secret tls is-tls \
+    --cert=path/to/cert/file \
+    --key=path/to/key/file \
+    -n ${NAMESPACE}
+    ```
+   
+4. Create a Kubernetes secret for keystore files. It is required to have four Java keystore files for the deployment. Please refer to the [documentation](https://is.docs.wso2.com/en/latest/deploy/security/configure-keystores-in-wso2-products/#configure-keystores) for more details and how to create key stores.
+
+    * Internal keystore(internal.jks): The key store which is used for encrypting/decrypting internal data
+    * Primary keystore(primary.jks): Certificates used for signing messages that are communicated with external parties(such SAML, OIDC id_token signing)
+    * TLS keystore(tls.jks): The key store which is used for tls communication.
+    * Client truststore(client-truststore.jks): Certificates of trusted third parties
+
+        ```shell
+        kubectl create secret generic keystores \
+        --from-file=internal.jks \
+        --from-file=primary.jks \
+        --from-file=tls.jks \
+        --from-file=client-truststore.jks \
+        -n ${NAMESPACE}
+        ```
+  
+5. Create [Azure storage account secret](https://learn.microsoft.com/en-us/azure/aks/azure-csi-files-storage-provision#create-a-kubernetes-secret) for persistence volume.
+   
+    Replace `<AZURE_STORAGE_NAME>` with Azure storage account name and `<AZURE_STORAGE_KEY>` with Azure storage account access key.
+  
+    ```shell
+    export AZURE_STORAGE_NAME='<AZURE_STORAGE_NAME>'
+    export AZURE_STORAGE_KEY='<AZURE_STORAGE_KEY>'
     ```
 
-- Create a Kubernetes secret to hold service principal credentials to access keyvault for [secrets-store-csi-driver-provider-azure](https://azure.github.io/secrets-store-csi-driver-provider-azure/docs/configurations/identity-access-modes/service-principal-mode/).
-  Replace `<AZURE_KEY_VAULT_SP_APP_ID>` with Azure active directory service principle application ID and `<AZURE_KEY_VAULT_SP_APP_SECRET>` with Azure active directory service principle application secret
-     
-   ```shell
-
-    export AZURE_KEY_VAULT_SP_APP_ID='<AZURE_KEY_VAULT_SP_APP_ID>'
-    export AZURE_KEY_VAULT_SP_APP_SECRET='<AZURE_KEY_VAULT_SP_APP_SECRET>'
-       
-    kubectl create secret generic azure-kv-secret-store-sp \
-    --from-literal=clientid="${AZURE_KEY_VAULT_SP_APP_ID}" \
-    --from-literal=clientsecret="${AZURE_KEY_VAULT_SP_APP_SECRET}" \
+    ```shell
+    kubectl create secret generic azure-storage-csi \
+    --from-literal=azurestorageaccountname="${AZURE_STORAGE_NAME}" \
+    --from-literal=azurestorageaccountkey="${AZURE_STORAGE_KEY}" \
     -n ${NAMESPACE}
     ```
 
+6. Configure Azure key vault 
+ 
+    - Add `internal.jks` keystore password as the secret with the name `INTERNAL-KEYSTORE-PASSWORD-DECRYPTED`. Replace `<AZURE_KEY_VAULT_NAME>` with Azure Key vault name, `<AZURE_SUBSCRIPTION_ID>` with Azure subscription ID and `<INTERNAL_KEYSTORE_PASSWORD_DECRYPTED>` with internal keystore(`internal.jks`) password.
+
+        ```shell
+        export AZURE_KEY_VAULT_NAME='<AZURE_KEY_VAULT_NAME>'
+        export AZURE_SUBSCRIPTION_ID='<AZURE_SUBSCRIPTION_ID>'
+        export INTERNAL_KEYSTORE_PASSWORD_DECRYPTED='<INTERNAL_KEYSTORE_PASSWORD_DECRYPTED>'
+        ```
+    
+        ```shell
+        az login
+        az account set -s "${AZURE_SUBSCRIPTION_ID}"
+        az keyvault secret set --vault-name "${AZURE_KEY_VAULT_NAME}" --name "INTERNAL-KEYSTORE-PASSWORD-DECRYPTED" --value "${INTERNAL_KEYSTORE_PASSWORD_DECRYPTED}"
+        ```
+
+    - Create a Kubernetes secret to hold service principal credentials to access keyvault for [secrets-store-csi-driver-provider-azure](https://azure.github.io/secrets-store-csi-driver-provider-azure/docs/configurations/identity-access-modes/service-principal-mode/).
+  
+        Replace `<AZURE_KEY_VAULT_SP_APP_ID>` with Azure active directory service principle application ID and `<AZURE_KEY_VAULT_SP_APP_SECRET>` with Azure active directory service principle application secret
+     
+        ```shell
+        export AZURE_KEY_VAULT_SP_APP_ID='<AZURE_KEY_VAULT_SP_APP_ID>'
+        export AZURE_KEY_VAULT_SP_APP_SECRET='<AZURE_KEY_VAULT_SP_APP_SECRET>'
+        ```
+    
+        ```shell
+        kubectl create secret generic azure-kv-secret-store-sp \
+        --from-literal=clientid="${AZURE_KEY_VAULT_SP_APP_ID}" \
+        --from-literal=clientsecret="${AZURE_KEY_VAULT_SP_APP_SECRET}" \
+        -n ${NAMESPACE}
+        ```
+
 7. Encrypt secrets using WSO2 secure vault encryption
 
-Following set of secure vault encrypted secrets are required for the deployment, please follow the [guideline](https://is.docs.wso2.com/en/latest/deploy/security/encrypt-passwords-with-cipher-tool/) to encrypt secrets using WSO2 secure vault encryption. Make sure to use previously created `internal.jks` keystore for the WSO2 secure vault encryption.
+    Following set of secure vault encrypted secrets are required for the deployment, please follow the [guideline](https://is.docs.wso2.com/en/latest/deploy/security/encrypt-passwords-with-cipher-tool/) to encrypt secrets using WSO2 secure vault encryption. Make sure to use previously created `internal.jks` keystore for the WSO2 secure vault encryption.
 
-```shell
-export DATABASE_IDENTITY_ENCRYPTED_PASSWORD='<Identity database encrypted user password >'
-export DATABASE_SHARED_ENCRYPTED_PASSWORD='<Shared database encrypted user password>'
-export DATABASE_USER_ENCRYPTED_PASSWORD='<User database encrypted user password>'
-export DATABASE_CONSENT_ENCRYPTED_PASSWORD='<Consent database encrypted user password>'
-export DATABASE_BPS_ENCRYPTED_PASSWORD='<BPS database encrypted user password>'
-export KEYSTORE_INTERNAL_ENCRYPTED_PASSWORD='<Internal key store encrypted password>'
-export KEYSTORE_INTERNAL_ENCRYPTED_KEY_PASSWORD='<Internal key store key encrypted password>'
-export KEYSTORE_PRIMARY_ENCRYPTED_PASSWORD='<Primary key store encrypted password>'
-export KEYSTORE_PRIMARY_ENCRYPTED_KEY_PASSWORD='<Primary key store key encrypted password>'
-export KEYSTORE_TLS_ENCRYPTED_PASSWORD='<TLS key store encrypted password>'
-export KEYSTORE_TLS_ENCRYPTED_KEY_PASSWORD='<TLS key store key encrypted password>'
-export SUPER_ADMIN_ENCRYPTED_PASSWORD='<Super admin user encrypted password>'
-export TRUSTSTORE_ENCRYPTED_PASSWORD='<Client truststore encrypted password>'
-export IDENTITY_AUTH_FRAMEWORK_ENDPOINT_ENCRYPTED_APP_PASSWORD='<Encrypted app password>'
-```
+    ```shell
+    export DATABASE_IDENTITY_ENCRYPTED_PASSWORD='<Identity database encrypted user password >'
+    export DATABASE_SHARED_ENCRYPTED_PASSWORD='<Shared database encrypted user password>'
+    export DATABASE_USER_ENCRYPTED_PASSWORD='<User database encrypted user password>'
+    export DATABASE_CONSENT_ENCRYPTED_PASSWORD='<Consent database encrypted user password>'
+    export DATABASE_BPS_ENCRYPTED_PASSWORD='<BPS database encrypted user password>'
+    export KEYSTORE_INTERNAL_ENCRYPTED_PASSWORD='<Internal key store encrypted password>'
+    export KEYSTORE_INTERNAL_ENCRYPTED_KEY_PASSWORD='<Internal key store key encrypted password>'
+    export KEYSTORE_PRIMARY_ENCRYPTED_PASSWORD='<Primary key store encrypted password>'
+    export KEYSTORE_PRIMARY_ENCRYPTED_KEY_PASSWORD='<Primary key store key encrypted password>'
+    export KEYSTORE_TLS_ENCRYPTED_PASSWORD='<TLS key store encrypted password>'
+    export KEYSTORE_TLS_ENCRYPTED_KEY_PASSWORD='<TLS key store key encrypted password>'
+    export SUPER_ADMIN_ENCRYPTED_PASSWORD='<Super admin user encrypted password>'
+    export TRUSTSTORE_ENCRYPTED_PASSWORD='<Client truststore encrypted password>'
+    export IDENTITY_AUTH_FRAMEWORK_ENDPOINT_ENCRYPTED_APP_PASSWORD='<Encrypted app password>'
+    ```
 
 8. Install Helm chart
-   Replace `<>` places holders with values as below,
+   
+    Replace `<>` places holders with values as below,
+    
     * **<IMAGE_REGISTRY_HOSTNAME>**: Azure container register(ACR) hostname
     * **<IMAGE_REPOSITORY_NAME>**: Azure container register(ACR) identity server image repository name
     * **<IMAGE_DIGEST>**: Azure container register(ACR) identity server image digest
@@ -154,7 +169,7 @@ export IDENTITY_AUTH_FRAMEWORK_ENDPOINT_ENCRYPTED_APP_PASSWORD='<Encrypted app p
     * **<IS_HOSTNAME>**: Identity server public hostname
     * **<SUPER_ADMIN_USERNAME>**: Identity server super admin username
     * **<ACCOUNT_RECOVERY_ENDPOINT_AUTH_HASH>**: Identity server super admin username
-   
+
     ```shell
     export IMAGE_REGISTRY_HOSTNAME='<IMAGE_REGISTRY_HOSTNAME>'
     export IMAGE_REPOSITORY_NAME='<IMAGE_REPOSITORY_NAME>'
@@ -175,7 +190,9 @@ export IDENTITY_AUTH_FRAMEWORK_ENDPOINT_ENCRYPTED_APP_PASSWORD='<Encrypted app p
     export IS_HOSTNAME='<IS_HOSTNAME>'
     export SUPER_ADMIN_USERNAME='<SUPER_ADMIN_USERNAME>'
     export ACCOUNT_RECOVERY_ENDPOINT_AUTH_HASH='<ACCOUNT_RECOVERY_ENDPOINT_AUTH_HASH>'
-   
+    ```
+
+    ```shell
     helm template is-test . -n "${NAMESPACE}" \
     --set deployment.image.registry="${IMAGE_REGISTRY_HOSTNAME}" \
     --set deployment.image.repository="${IMAGE_REPOSITORY_NAME}" \
@@ -215,7 +232,7 @@ export IDENTITY_AUTH_FRAMEWORK_ENDPOINT_ENCRYPTED_APP_PASSWORD='<Encrypted app p
     --set deployment.secretStore.azure.keyVault.tenantId="${AZURE_TENANT_ID}" 
     ```
 
-# Compatibility
+## Compatibility
 
 | Kubernetes Version | Helm Version | Secrets Store CSI Driver Version | Compatibility Notes                  |
 |--------------------|--------------|----------------------------------|--------------------------------------|
