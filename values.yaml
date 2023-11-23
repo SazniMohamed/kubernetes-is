@@ -71,7 +71,7 @@ deployment:
   #      name: custom-property-file
   securityContext:
     # -- Run as user ID
-    runAsUser: 10001
+    runAsUser: 802
     seccompProfile:
     # --  Seccomp profile type
       type: "RuntimeDefault"
@@ -133,13 +133,13 @@ deployment:
         -Dhttpclient.hostnameVerifier=Strict -Djdk.tls.client.protocols=TLSv1.2
         -Djava.util.prefs.systemRoot=/home/wso2carbon/.java -Djava.util.prefs.userRoot=/home/wso2carbon/.java/.userPrefs
   # -- Product version
-  buildVersion: "7.0.0-beta"
+  buildVersion: "5.11.0"
   # -- Product pack name
   productPackName: "wso2is"
   # -- Enable correlation logs
   enableCorrelationLogs: false
   # -- K8s secret name which contains JKS files
-  JKSSecretName: "keystores"
+  JKSSecretName: "is-jks"
   persistence:
     # -- Enable persistence for artifact sharing
     enabled: false
@@ -162,7 +162,7 @@ deployment:
   secretStore:
     azure:
       # -- Enable Azure Key Vault integration.
-      enabled: true
+      enabled: false
       keyVault:
         # -- Name of the target Azure Key Vault instance
         name: ""
@@ -178,7 +178,7 @@ deployment:
         # -- Azure Key Vault secret name of the internal keystore password
         secretName: "INTERNAL-KEYSTORE-PASSWORD-DECRYPTED"
       # -- The name of the Kubernetes secret that contains the service principal credentials to access Azure Key Vault. Ref: https://azure.github.io/secrets-store-csi-driver-provider-azure/docs/configurations/identity-access-modes/service-principal-mode/#configure-service-principal-to-access-keyvault
-      nodePublishSecretRef: "azure-kv-secret-store-sp"
+      nodePublishSecretRef: "asgardio-product-key-vault-sp-credentials"
 
 deploymentToml:
   server:
@@ -318,13 +318,13 @@ deploymentToml:
       alias: "wso2carbon"
       encryptedKeyPassword: ""
     primary:
-      fileName: "primary.jks"
+      fileName: "primaryKeyStore.jks"
       type: "JKS"
       encryptedPassword: ""
       alias: "wso2carbon"
       encryptedKeyPassword: ""
     internal:
-      fileName: "internal.jks"
+      fileName: "internalKeyStore.jks"
       type: "JKS"
       encryptedPassword: ""
       alias: "wso2carbon"
@@ -383,13 +383,67 @@ deploymentToml:
       autoUnlockTimeIncrementRatio: 2
       # -- The time specified here is in minutes. Authentication can be attempted once this time has passed.
       autoUnlockAfter: 5
-    otp:
-      # -- Enable account locking by SMS otp. Ref: https://is.docs.wso2.com/en/latest/guides/identity-lifecycles/lock-accounts-by-failed-otp-attempts/
-      smsEnabled: false
+  otp:
+    email:
+      # -- Enable email OTP. Ref: https://is.docs.wso2.com/en/latest/guides/mfa/email-otp-config-advanced/#email-otp-configurations
+      enabled: false
+      # -- Authentication endpoint URL of the authenticator.
+      authenticationEndpointURL: "https://localhost:9443/emailotpauthenticationendpoint/emailotp.jsp"
+      # -- Error page that will be displayed in case of an authentication failure.
+      authenticationEndpointErrorPage: "https://localhost:9443/emailotpauthenticationendpoint/emailotpError.jsp"
+      addressRequestPage: "https://localhost:9443/emailotpauthenticationendpoint/emailAddress.jsp"
+      # -- This parameter defines how the email ID will be retrieved.
+      usecase: "local"
+      # -- You can define multiple user stores per tenant as comma separated values.
+      secondaryUserstore: "primary"
+      # -- This parmeter defines whether email OTP is enforced as the second step of the 2FA/MFA or not.
+      mandatory: false
+      sendOTPToFederatedEmailAttribute: false
+      federatedEmailAttributeKey: "email"
+      enableByUserClaim: true
+      captureAndUpdateEmailAddress: true
+      showEmailAddressInUI: true
+      useEventHandlerBasedEmailSender: true
+      emailAddressRegex: '(?&lt;=.{1}).(?=.*@)'
+      tokenExpirationTime: 300000
       # -- Enable account locking by email OTP. Ref: https://is.docs.wso2.com/en/latest/guides/identity-lifecycles/lock-accounts-by-failed-otp-attempts/
-      emailEnabled: false
+      userAccountLockEnabled: false
+    sms:
+      # -- Enable SMS OTP. Ref: https://is.docs.wso2.com/en/latest/guides/mfa/sms-otp-config-advanced/
+      enabled: false
+      authenticationEndpointURL: "/smsotpauthenticationendpoint/smsotp.jsp"
+      authenticationEndpointErrorPage: "/smsotpauthenticationendpoint/smsotpError.jsp"
+      mobileNumberRegPage: "/smsotpauthenticationendpoint/mobile.jsp"
+      retryEnable: true
+      resendEnable: true
+      backupCode: true
+      enableByUserClaim: true
+      usecase: "local"
+      secondaryUserstore: "primary"
+      mandatory: false
+      federatedMobile: false
+      federatedMobileAttributeKey: "mobile"
+      captureAndUpdateMobileNumber: true
+      directlyToMobile: false
+      redirectToMultiOptionPageOnFailure: false
+      # -- Enable account locking by email OTP. Ref: https://is.docs.wso2.com/en/latest/guides/identity-lifecycles/lock-accounts-by-failed-otp-attempts/
+      userAccountLockEnabled: false
+  totp:
+    enabled: false
+    encodingMethod: "Base32"
+    timeStepSize: "30"
+    windowSize: "3"
+    authenticationMandatory: true
+    enrolUserInAuthenticationFlow: true
+    usecase: "local"
+    secondaryUserstore: "primary"
+    authenticationEndpointURL: "authenticationendpoint/totp.do"
+    authenticationEndpointErrorPage: "authenticationendpoint/totp_error.do"
+    authenticationEndpointEnableTOTPPage: "authenticationendpoint/totp_enroll.do"
+    issuer: "WSO2"
+    useCommonIssuer: true
     # -- Enable account locking by OTP. Ref: https://is.docs.wso2.com/en/latest/guides/identity-lifecycles/lock-accounts-by-failed-otp-attempts/
-    totpEnabled: false
+    userAccountLockEnabled: false
   # -- Add custom configurations to deployment.toml.
   extraConfigs: #|
     # [transport.https.properties]

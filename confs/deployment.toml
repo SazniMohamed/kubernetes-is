@@ -14,7 +14,11 @@ ciphers={{ .Values.deploymentToml.transport.https.sslHostConfig.properties.ciphe
 
 [super_admin]
 username = {{ .Values.deploymentToml.superAdmin.username | quote }}
-password = "$secret{super_admin_password}"
+{{- if .Values.deployment.secretStore.azure.enabled }}
+password = "$secret{SUPER-ADMIN-PASSWORD}"
+{{- else }}
+password = {{ .Values.deploymentToml.superAdmin.password | quote }}
+{{- end }}
 create_admin_account = {{ .Values.deploymentToml.superAdmin.createAdminAccount }}
 
 [user_store]
@@ -23,9 +27,13 @@ type = {{ .Values.deploymentToml.userStore.type | quote }}
 [database.identity_db]
 type = {{ .Values.deploymentToml.database.identity.type | quote }}
 url = {{ .Values.deploymentToml.database.identity.url | quote }}
+{{- if .Values.deployment.secretStore.azure.enabled }}
+username = "$secret{IDENTITY-DB-USER-USERNAME}"
+password = "$secret{IDENTITY-DB-USER-PASSWORD}"
+{{- else }}
 username = {{ .Values.deploymentToml.database.identity.username | quote }}
-password = "$secret{database_identity_password}"
-driver = {{ .Values.deploymentToml.database.identity.driver | quote }}
+password = {{ .Values.deploymentToml.database.identity.password | quote }}
+{{- end }}
 {{- if .Values.deploymentToml.database.identity.poolOptions }}
 [database.identity_db.pool_options]
 {{- range $key, $value := .Values.deploymentToml.database.identity.poolOptions }}
@@ -36,9 +44,13 @@ driver = {{ .Values.deploymentToml.database.identity.driver | quote }}
 [database.shared_db]
 type = {{ .Values.deploymentToml.database.shared.type | quote }}
 url = {{ .Values.deploymentToml.database.shared.url | quote }}
+{{- if .Values.deployment.secretStore.azure.enabled }}
+username = "$secret{REGISTRY-DB-USER-USERNAME}"
+password = "$secret{REGISTRY-DB-USER-PASSWORD}"
+{{- else }}
 username = {{ .Values.deploymentToml.database.shared.username | quote }}
-password = "$secret{database_shared_password}"
-driver = {{ .Values.deploymentToml.database.shared.driver | quote }}
+password = {{ .Values.deploymentToml.database.shared.password | quote }}
+{{- end }}
 {{- if .Values.deploymentToml.database.shared.poolOptions }}
 [database.shared_db.pool_options]
 {{- range $key, $value := .Values.deploymentToml.database.shared.poolOptions }}
@@ -46,92 +58,75 @@ driver = {{ .Values.deploymentToml.database.shared.driver | quote }}
 {{- end }}
 {{- end }}
 
-[datasource.WSO2ConsentDS]
-id="WSO2CONSENT_DB"
-url = {{ .Values.deploymentToml.database.consent.url | quote }}
-username = {{ .Values.deploymentToml.database.consent.username | quote }}
-password = "$secret{database_consent_password}"
-driver = {{ .Values.deploymentToml.database.consent.driver | quote }}
-jmx_enable=false
-{{- if .Values.deploymentToml.database.consent.poolOptions }}
-[datasource.WSO2ConsentDS.pool_options]
-{{- range $key, $value := .Values.deploymentToml.database.consent.poolOptions }}
-{{ $key }} = {{ $value | quote }}
-{{- end }}
-{{- end }}
-
-[authentication.consent]
-data_source="jdbc/WSO2CONSENT_DB"
-
-[realm_manager]
-data_source = "WSO2USER_DB"
-
-[database.user]
-type = {{ .Values.deploymentToml.database.user.type | quote }}
-url = {{ .Values.deploymentToml.database.user.url | quote }}
-username = {{ .Values.deploymentToml.database.user.username | quote }}
-password = "$secret{database_user_password}"
-driver = {{ .Values.deploymentToml.database.user.driver | quote }}
-{{- if .Values.deploymentToml.database.user.poolOptions }}
-[database.user.pool_options]
-{{- range $key, $value := .Values.deploymentToml.database.user.poolOptions }}
-{{ $key }} = {{ $value | quote }}
-{{- end }}
-{{- end }}
-
-[bps_database.config]
-type = {{ .Values.deploymentToml.database.bps.type | quote }}
-url = {{ .Values.deploymentToml.database.bps.url | quote }}
-username = {{ .Values.deploymentToml.database.bps.username | quote }}
-password = "$secret{database_bps_password}"
-driver = {{ .Values.deploymentToml.database.bps.driver | quote }}
-{{- if .Values.deploymentToml.database.bps.poolOptions }}
-[bps_database.config.pool_options]
-{{- range $key, $value := .Values.deploymentToml.database.bps.poolOptions }}
-{{ $key }} = {{ $value | quote }}
-{{- end }}
-{{- end }}
-
 [keystore.tls]
 file_name =  {{ .Values.deploymentToml.keystore.tls.fileName | quote }}
 type =  {{ .Values.deploymentToml.keystore.tls.type | quote }}
-password = "$secret{keystore_tls_password}"
 alias = {{ .Values.deploymentToml.keystore.tls.alias | quote }}
-key_password = "$secret{keystore_tls_key_password}"
+{{- if .Values.deployment.secretStore.azure.enabled }}
+password = "$secret{INTERNAL-KEYSTORE-PASSWORD}"
+key_password = "$secret{INTERNAL-KEYSTORE-PASSWORD}"
+{{- else }}
+password = {{ .Values.deploymentToml.keystore.internal.internalKeyStorePassword | quote }}
+key_password = {{ .Values.deploymentToml.keystore.internal.internalKeyStorePassword | quote }}
+{{- end }}
 
 [keystore.primary]
 file_name =  {{ .Values.deploymentToml.keystore.primary.fileName | quote }}
 type =  {{ .Values.deploymentToml.keystore.primary.type | quote }}
-password = "$secret{keystore_primary_password}"
 alias = {{ .Values.deploymentToml.keystore.primary.alias | quote }}
-key_password = "$secret{keystore_primary_key_password}"
+{{- if .Values.deployment.secretStore.azure.enabled }}
+password = "$secret{PRIMARY-KEYSTORE-PASSWORD}"
+key_password = "$secret{PRIMARY-KEYSTORE-PASSWORD}"
+{{- else }}
+password = {{ .Values.deploymentToml.keystore.primary.primaryKeyStorePassword | quote }}
+key_password = {{ .Values.deploymentToml.keystore.primary.primaryKeyStorePassword | quote }}
+{{- end }}
 
 [keystore.internal]
 file_name =  {{ .Values.deploymentToml.keystore.internal.fileName | quote }}
 type =  {{ .Values.deploymentToml.keystore.internal.type | quote }}
-password = "$secret{keystore_internal_password}"
 alias = {{ .Values.deploymentToml.keystore.internal.alias | quote }}
-key_password = "$secret{keystore_internal_key_password}"
+{{- if .Values.deployment.secretStore.azure.enabled }}
+password = "$secret{INTERNAL-KEYSTORE-PASSWORD}"
+key_password = "$secret{INTERNAL-KEYSTORE-PASSWORD}"
+{{- else }}
+password = {{ .Values.deploymentToml.keystore.internal.internalKeyStorePassword | quote }}
+key_password = {{ .Values.deploymentToml.keystore.internal.internalKeyStorePassword | quote }}
+{{- end }}
 
 [truststore]
 file_name =  {{ .Values.deploymentToml.truststore.fileName | quote }}
 type =  {{ .Values.deploymentToml.truststore.type | quote }}
-password = "$secret{keystore_truststore_password}"
+{{- if .Values.deployment.secretStore.azure.enabled }}
+password = "$secret{TRUSTSTORE-PASSWORD}"
+{{- else }}
+password = {{ .Values.deploymentToml.truststore.trustStorePassword | quote }}
+{{- end }}
 
 [account_recovery.endpoint.auth]
-hash= {{ .Values.deploymentToml.account.recovery.endpoint.auth.hash | quote }}
+{{- if .Values.deployment.secretStore.azure.enabled }}
+hash = "$secret{APPS-PASSWORD-HASH}"
+{{- else }}
+hash = {{ .Values.deploymentToml.account.recovery.endpoint.auth.hash | quote }}
+{{- end }}
 
 [identity.auth_framework.endpoint]
-app_password= "$secret{app_password}"
+{{- if .Values.deployment.secretStore.azure.enabled }}
+app_password = "$secret{APPS-PASSWORD}"
+{{- else }}
+app_password = {{ .Values.deploymentToml.identity.identityAppsPassword | quote }}
+{{- end }}
 
 
 {{- if .Values.deploymentToml.clustering.enabled }}
 [clustering]
-membership_scheme={{.Values.deploymentToml.clustering.membershipScheme | quote }}
-domain= {{.Values.deploymentToml.clustering.domain | quote }}
-local_member_port={{.Values.deploymentToml.clustering.localMemberPort | quote }}
-properties.KUBERNETES_NAMESPACE={{ .Release.Namespace | quote }}
-properties.KUBERNETES_SERVICES={{ include "..fullname" . | quote }}
+membership_scheme = "kubernetes"
+domain = "wso2.carbon.domain"
+properties.membershipSchemeClassName = "org.wso2.carbon.membership.scheme.kubernetes.KubernetesMembershipScheme"
+properties.KUBERNETES_NAMESPACE = "{{ .Release.Namespace }}"
+properties.KUBERNETES_SERVICES = {{ include "..fullname" . | quote }}
+properties.KUBERNETES_MASTER_SKIP_SSL_VERIFICATION = "true"
+properties.USE_DNS = "false"
 {{- end }}
 
 [oauth.token_cleanup]
@@ -154,14 +149,17 @@ http_method = "all"
 permissions = ["/permission/protected/manage/monitor/tenants"]
 
 {{- if .Values.deploymentToml.recaptcha.enabled }}
-#Google reCAPTCHA settings.
-
 [recaptcha]
 enabled = true
 api_url = {{ .Values.deploymentToml.recaptcha.apiUrl | quote }}
 verify_url = {{ .Values.deploymentToml.recaptcha.verifyUrl | quote }}
-site_key = "$secret{recaptcha_site_key}"
-secret_key = "$secret{recaptcha_secret_key}"
+{{- if .Values.deployment.secretStore.azure.enabled }}
+site_key = "$secret{RECAPTCHA-SITE-KEY}"
+secret_key = "$secret{RECAPTCHA-SECRET-KEY}"
+{{- else }}
+site_key = {{ .Values.deploymentToml.recaptcha.siteKey | quote }}
+secret_key = {{ .Values.deploymentToml.recaptcha.secretKey | quote }}
+{{- end }}
 {{- end }}
 
 {{- if .Values.deploymentToml.outputAdapter.email.enabled }}
@@ -169,7 +167,11 @@ secret_key = "$secret{recaptcha_secret_key}"
 [output_adapter.email]
 from_address= {{ .Values.deploymentToml.outputAdapter.email.fromAddress | quote }}
 username= {{ .Values.deploymentToml.outputAdapter.email.username | quote }}
-password= "$secret{output_adapter_email_password}"
+{{- if .Values.deployment.secretStore.azure.enabled }}
+password = "$secret{SMTP-PASSWORD}"
+{{- else }}
+password = {{ .Values.deploymentToml.outputAdapter.email.password | quote }}
+{{- end }}
 hostname= {{ .Values.deploymentToml.outputAdapter.email.hostname | quote }}
 port= {{ .Values.deploymentToml.outputAdapter.email.port }}
 enable_start_tls= {{ .Values.deploymentToml.outputAdapter.email.enableStartTls }}
@@ -191,56 +193,67 @@ auto_unlock_time_increment_ratio={{ .Values.deploymentToml.userAccountLock.login
 auto_unlock_after={{ .Values.deploymentToml.userAccountLock.loginAttempts.autoUnlockAfter }}
 enable_account_locking=true
 
-{{- if .Values.deploymentToml.userAccountLock.otp.emailEnabled }}
+{{- end }}
+
+[authentication.authenticator.email_otp]
+enable={{ .Values.deploymentToml.otp.email.enabled }}
+
 [authentication.authenticator.email_otp.parameters]
-EnableAccountLockingForFailedAttempts = true
-{{- end }}
+EMAILOTPAuthenticationEndpointURL = {{ .Values.deploymentToml.otp.email.authenticationEndpointURL | quote }}
+EmailOTPAuthenticationEndpointErrorPage = {{ .Values.deploymentToml.otp.email.authenticationEndpointErrorPage | quote }}
+EmailAddressRequestPage = {{ .Values.deploymentToml.otp.email.addressRequestPage | quote }}
+usecase = {{ .Values.deploymentToml.otp.email.usecase | quote }}
+secondaryUserstore = {{ .Values.deploymentToml.otp.email.secondaryUserstore | quote }}
+EMAILOTPMandatory = {{ .Values.deploymentToml.otp.email.mandatory }}
+sendOTPToFederatedEmailAttribute = {{ .Values.deploymentToml.otp.email.sendOTPToFederatedEmailAttribute }}
+federatedEmailAttributeKey = {{ .Values.deploymentToml.otp.email.federatedEmailAttributeKey | quote }}
+EmailOTPEnableByUserClaim = {{ .Values.deploymentToml.otp.email.enableByUserClaim }}
+CaptureAndUpdateEmailAddress = {{ .Values.deploymentToml.otp.email.captureAndUpdateEmailAddress }}
+showEmailAddressInUI = {{ .Values.deploymentToml.otp.email.showEmailAddressInUI }}
+useEventHandlerBasedEmailSender = {{ .Values.deploymentToml.otp.email.useEventHandlerBasedEmailSender }}
+emailAddressRegex = {{ .Values.deploymentToml.otp.email.emailAddressRegex | squote }}
+tokenExpirationTime = {{ .Values.deploymentToml.otp.email.tokenExpirationTime }}
+EnableAccountLockingForFailedAttempts = {{ .Values.deploymentToml.otp.email.userAccountLockEnabled }}
 
-{{- if .Values.deploymentToml.userAccountLock.otp.smsEnabled }}
+[authentication.authenticator.sms_otp]
+enable={{ .Values.deploymentToml.otp.sms.enabled }}
+
 [authentication.authenticator.sms_otp.parameters]
-EnableAccountLockingForFailedAttempts = true
-EnableAccountLockingForFailedAttempts = true
-{{- end }}
+SMSOTPAuthenticationEndpointURL= {{ .Values.deploymentToml.otp.sms.authenticationEndpointURL | quote }}
+SMSOTPAuthenticationEndpointErrorPage= {{ .Values.deploymentToml.otp.sms.authenticationEndpointErrorPage | quote }}
+MobileNumberRegPage = {{ .Values.deploymentToml.otp.sms.mobileNumberRegPage | quote }}
+RetryEnable = {{ .Values.deploymentToml.otp.sms.retryEnable }}
+ResendEnable = {{ .Values.deploymentToml.otp.sms.resendEnable }}
+BackupCode = {{ .Values.deploymentToml.otp.sms.backupCode }}
+SMSOTPEnableByUserClaim = {{ .Values.deploymentToml.otp.sms.enableByUserClaim }}
+usecase = {{ .Values.deploymentToml.otp.sms.usecase | quote }}
+secondaryUserstore = {{ .Values.deploymentToml.otp.sms.secondaryUserstore | quote }}
+SMSOTPMandatory = {{ .Values.deploymentToml.otp.sms.mandatory }}
+SendOtpToFederatedMobile = {{ .Values.deploymentToml.otp.sms.federatedMobile  }}
+federatedMobileAttributeKey = {{ .Values.deploymentToml.otp.sms.federatedMobileAttributeKey | quote }}
+CaptureAndUpdateMobileNumber = {{ .Values.deploymentToml.otp.sms.captureAndUpdateMobileNumber }}
+SendOTPDirectlyToMobile = {{ .Values.deploymentToml.otp.sms.directlyToMobile }}
+redirectToMultiOptionPageOnFailure = {{ .Values.deploymentToml.otp.sms.redirectToMultiOptionPageOnFailure }}
+EnableAccountLockingForFailedAttempts = {{ .Values.deploymentToml.otp.sms.userAccountLockEnabled }}
 
-{{- if .Values.deploymentToml.userAccountLock.totpEnabled }}
+[authentication.authenticator.totp]
+enable={{ .Values.deploymentToml.totp.enabled }}
+
 [authentication.authenticator.totp.parameters]
-EnableAccountLockingForFailedAttempts = true
-{{- end }}
-
-{{- end }}
+encodingMethod={{ .Values.deploymentToml.totp.encodingMethod | quote }}
+timeStepSize={{ .Values.deploymentToml.totp.timeStepSize | quote }}
+windowSize={{ .Values.deploymentToml.totp.windowSize | quote }}
+authenticationMandatory={{ .Values.deploymentToml.totp.authenticationMandatory }}
+enrolUserInAuthenticationFlow={{ .Values.deploymentToml.totp.enrolUserInAuthenticationFlow }}
+usecase={{ .Values.deploymentToml.totp.usecase | quote }}
+secondaryUserstore={{ .Values.deploymentToml.totp.secondaryUserstore | quote }}
+TOTPAuthenticationEndpointURL={{ .Values.deploymentToml.totp.authenticationEndpointURL | quote }}
+TOTPAuthenticationEndpointErrorPage={{ .Values.deploymentToml.totp.authenticationEndpointErrorPage | quote }}
+TOTPAuthenticationEndpointEnableTOTPPage={{ .Values.deploymentToml.totp.authenticationEndpointEnableTOTPPage | quote }}
+Issuer={{ .Values.deploymentToml.totp.issuer | quote }}
+UseCommonIssuer={{ .Values.deploymentToml.totp.useCommonIssuer }}
+EnableAccountLockingForFailedAttempts = {{ .Values.deploymentToml.totp.userAccountLockEnabled }}
 
 {{- if .Values.deploymentToml.extraConfigs }}
 {{ .Values.deploymentToml.extraConfigs }}
-{{- end }}
-
-# Secure vault encryted secrets
-[secrets]
-# Super admin creds
-super_admin_password = {{ .Values.deploymentToml.superAdmin.encryptedPassword | quote }}
-# Database creds
-database_identity_password = {{ .Values.deploymentToml.database.identity.encryptedPassword | quote }}
-database_shared_password = {{ .Values.deploymentToml.database.shared.encryptedPassword | quote }}
-database_user_password = {{ .Values.deploymentToml.database.user.encryptedPassword | quote }}
-database_consent_password = {{ .Values.deploymentToml.database.consent.encryptedPassword | quote }}
-database_bps_password = {{ .Values.deploymentToml.database.bps.encryptedPassword | quote }}
-# Keystores
-keystore_tls_password = {{ .Values.deploymentToml.keystore.tls.encryptedPassword | quote }}
-keystore_tls_key_password = {{ .Values.deploymentToml.keystore.tls.encryptedKeyPassword | quote }}
-keystore_primary_password = {{ .Values.deploymentToml.keystore.primary.encryptedPassword | quote }}
-keystore_primary_key_password = {{ .Values.deploymentToml.keystore.primary.encryptedKeyPassword | quote }}
-keystore_internal_password = {{ .Values.deploymentToml.keystore.internal.encryptedPassword | quote }}
-keystore_internal_key_password = {{ .Values.deploymentToml.keystore.internal.encryptedKeyPassword | quote }}
-# Truststore
-keystore_truststore_password = {{ .Values.deploymentToml.truststore.encryptedPassword | quote }}
-# App password
-app_password = {{ .Values.deploymentToml.identity.authFramework.endpoint.encryptedAppPassword | quote }}
-
-{{- if .Values.deploymentToml.recaptcha.enabled }}
-# Recaptcha creds
-recaptcha_site_key = {{ .Values.deploymentToml.recaptcha.encryptedSiteKey | quote }}
-recaptcha_secret_key = {{ .Values.deploymentToml.recaptcha.encryptedSecretKey | quote }}
-{{- end }}
-
-{{- if .Values.deploymentToml.outputAdapter.email.enabled }}
-output_adapter_email_password = {{ .Values.deploymentToml.outputAdapter.email.encryptedPassword | quote }}
 {{- end }}

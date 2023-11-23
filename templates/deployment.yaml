@@ -36,7 +36,6 @@ spec:
         checksum.secret.properties: {{ include (print $.Template.BasePath "/cm-secret-config-properties.yaml") . | sha256sum }}
         checksum.log4j.properties: {{ include (print $.Template.BasePath "/cm-log4j2-properties.yaml") . | sha256sum }}
         checksum.entrypoint.sh: {{ include (print $.Template.BasePath "/cm-entrypoint.yaml") . | sha256sum }}
-        checksum.thrift-authentication.xml: {{ include (print $.Template.BasePath "/cm-thrift-authentication-xml.yaml") . | sha256sum }}
         container.apparmor.security.beta.kubernetes.io/wso2is: {{ .Values.deployment.apparmor.profile }}
     spec:
       securityContext:
@@ -64,6 +63,9 @@ spec:
         - name: wso2is
           image: {{ .Values.deployment.image.registry }}/{{ .Values.deployment.image.repository }}@{{ .Values.deployment.image.digest }}
           args:
+            {{- if .Values.deployment.secretStore.azure.enabled }}
+              - "-Djavax.net.ssl.trustStore=/home/wso2carbon/wso2is-{{ .Values.deployment.buildVersion }}/repository/resources/security/client-truststore.jks"
+            {{- end }}
             - "-Dorg.wso2.CipherTransformation=AES/GCM/NoPadding"
             {{- if .Values.deployment.enableCorrelationLogs }}
             - "-DenableCorrelationLogs=true"
@@ -130,12 +132,12 @@ spec:
             - containerPort: 9443
               protocol: TCP
           volumeMounts:
+            # - name: {{ template "..fullname" . }}-deployment-toml
+            #   mountPath: /home/wso2carbon/wso2-config-volume/repository/components/lib/postgresql-42.7.0.jar
+            #   subPath: ./postgresql-42.7.0.jar
             - name: {{ template "..fullname" . }}-deployment-toml
               mountPath: /home/wso2carbon/wso2-config-volume/repository/conf/deployment.toml
               subPath: deployment.toml
-            - name: {{ template "..fullname" . }}-thrift-authentication-xml
-              mountPath: /home/wso2carbon/wso2-config-volume/repository/conf/identity/thrift-authentication.xml
-              subPath: thrift-authentication.xml
             - name: {{ template "..fullname" . }}-secret-config-properties
               mountPath: /home/wso2carbon/wso2-config-volume/repository/conf/security/secret-conf.properties
               subPath: secret-conf.properties
@@ -145,21 +147,23 @@ spec:
             - name: keystores
               mountPath: /home/wso2carbon/{{ .Values.deployment.productPackName }}-{{ .Values.deployment.buildVersion }}/repository/resources/security/{{ .Values.deploymentToml.keystore.internal.fileName }}
               subPath: {{ .Values.deploymentToml.keystore.internal.fileName }}
-            - name: keystores
-              mountPath: /home/wso2carbon/{{ .Values.deployment.productPackName }}-{{ .Values.deployment.buildVersion }}/repository/resources/security/{{ .Values.deploymentToml.keystore.tls.fileName }}
-              subPath: {{ .Values.deploymentToml.keystore.tls.fileName }}
+            # - name: keystores
+            #   mountPath: /home/wso2carbon/{{ .Values.deployment.productPackName }}-{{ .Values.deployment.buildVersion }}/repository/resources/security/{{ .Values.deploymentToml.keystore.tls.fileName }}
+            #   subPath: {{ .Values.deploymentToml.keystore.tls.fileName }}
             - name: keystores
               mountPath: /home/wso2carbon/{{ .Values.deployment.productPackName }}-{{ .Values.deployment.buildVersion }}/repository/resources/security/{{ .Values.deploymentToml.keystore.primary.fileName }}
               subPath: {{ .Values.deploymentToml.keystore.primary.fileName }}
             - name: {{ template "..fullname" . }}-log4j2-properties
               mountPath: /home/wso2carbon/wso2-config-volume/repository/conf/log4j2.properties
               subPath: log4j2.properties
+            {{- if .Values.deployment.secretStore.azure.enabled }}
             - name: secrets-volume
               mountPath: /mnt/secrets-store
               readOnly: true
             - name: {{ template "..fullname" . }}-entrypoint
               mountPath: /home/wso2carbon/docker-entrypoint.sh
               subPath: docker-entrypoint.sh
+            {{- end }}
           {{- if .Values.deployment.persistence.enabled }}
             - name: runtime-persistent-data-storage
               mountPath: /home/wso2carbon/{{ .Values.deployment.productPackName }}-{{ .Values.deployment.buildVersion }}/repository/tenants
@@ -179,9 +183,6 @@ spec:
         - name: {{ template "..fullname" . }}-deployment-toml
           configMap:
             name: {{ template "..fullname" . }}-deployment-toml
-        - name: {{ template "..fullname" . }}-thrift-authentication-xml
-          configMap:
-            name: {{ template "..fullname" . }}-thrift-authentication-xml
         - name: {{ template "..fullname" . }}-log4j2-properties
           configMap:
             name: {{ template "..fullname" . }}-log4j2-properties
@@ -191,6 +192,7 @@ spec:
         - name: keystores
           secret:
             secretName: {{ .Values.deployment.JKSSecretName }}
+        {{- if .Values.deployment.secretStore.azure.enabled }}
         - name: secrets-volume
           csi:
             driver: secrets-store.csi.k8s.io
@@ -201,6 +203,7 @@ spec:
             nodePublishSecretRef:
               name: {{ .Values.deployment.secretStore.azure.nodePublishSecretRef }}
             {{- end }}
+        {{- end }}
         - name: {{ template "..fullname" . }}-entrypoint
           configMap:
             name: {{ template "..fullname" . }}-entrypoint
