@@ -193,7 +193,7 @@ export NAMESPACE=<NAMESPACE>
     ```
 
     ```shell
-    helm template is-test . -n "${NAMESPACE}" \
+    helm install is-test . -n "${NAMESPACE}" \
     --set deployment.image.registry="${IMAGE_REGISTRY_HOSTNAME}" \
     --set deployment.image.repository="${IMAGE_REPOSITORY_NAME}" \
     --set deployment.image.digest="${IMAGE_DIGEST}" \
