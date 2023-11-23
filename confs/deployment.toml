@@ -191,23 +191,66 @@ auto_unlock_time_increment_ratio={{ .Values.deploymentToml.userAccountLock.login
 auto_unlock_after={{ .Values.deploymentToml.userAccountLock.loginAttempts.autoUnlockAfter }}
 enable_account_locking=true
 
-{{- if .Values.deploymentToml.userAccountLock.otp.emailEnabled }}
+{{- end }}
+
+[authentication.authenticator.email_otp]
+enable={{ .Values.deploymentToml.otp.email.enabled }}
+
 [authentication.authenticator.email_otp.parameters]
-EnableAccountLockingForFailedAttempts = true
-{{- end }}
+EMAILOTPAuthenticationEndpointURL = {{ .Values.deploymentToml.otp.email.authenticationEndpointURL | quote }}
+EmailOTPAuthenticationEndpointErrorPage = {{ .Values.deploymentToml.otp.email.authenticationEndpointErrorPage | quote }}
+EmailAddressRequestPage = {{ .Values.deploymentToml.otp.email.addressRequestPage | quote }}
+usecase = {{ .Values.deploymentToml.otp.email.usecase | quote }}
+secondaryUserstore = {{ .Values.deploymentToml.otp.email.secondaryUserstore | quote }}
+EMAILOTPMandatory = {{ .Values.deploymentToml.otp.email.mandatory }}
+sendOTPToFederatedEmailAttribute = {{ .Values.deploymentToml.otp.email.sendOTPToFederatedEmailAttribute }}
+federatedEmailAttributeKey = {{ .Values.deploymentToml.otp.email.federatedEmailAttributeKey | quote }}
+EmailOTPEnableByUserClaim = {{ .Values.deploymentToml.otp.email.enableByUserClaim }}
+CaptureAndUpdateEmailAddress = {{ .Values.deploymentToml.otp.email.captureAndUpdateEmailAddress }}
+showEmailAddressInUI = {{ .Values.deploymentToml.otp.email.showEmailAddressInUI }}
+useEventHandlerBasedEmailSender = {{ .Values.deploymentToml.otp.email.useEventHandlerBasedEmailSender }}
+emailAddressRegex = {{ .Values.deploymentToml.otp.email.emailAddressRegex | squote }}
+tokenExpirationTime = {{ .Values.deploymentToml.otp.email.tokenExpirationTime }}
+EnableAccountLockingForFailedAttempts = {{ .Values.deploymentToml.otp.email.userAccountLockEnabled }}
 
-{{- if .Values.deploymentToml.userAccountLock.otp.smsEnabled }}
+[authentication.authenticator.sms_otp]
+enable={{ .Values.deploymentToml.otp.sms.enabled }}
+
 [authentication.authenticator.sms_otp.parameters]
-EnableAccountLockingForFailedAttempts = true
-EnableAccountLockingForFailedAttempts = true
-{{- end }}
+SMSOTPAuthenticationEndpointURL= {{ .Values.deploymentToml.otp.sms.authenticationEndpointURL | quote }}
+SMSOTPAuthenticationEndpointErrorPage= {{ .Values.deploymentToml.otp.sms.authenticationEndpointErrorPage | quote }}
+MobileNumberRegPage = {{ .Values.deploymentToml.otp.sms.mobileNumberRegPage | quote }}
+RetryEnable = {{ .Values.deploymentToml.otp.sms.retryEnable }}
+ResendEnable = {{ .Values.deploymentToml.otp.sms.resendEnable }}
+BackupCode = {{ .Values.deploymentToml.otp.sms.backupCode }}
+SMSOTPEnableByUserClaim = {{ .Values.deploymentToml.otp.sms.enableByUserClaim }}
+usecase = {{ .Values.deploymentToml.otp.sms.usecase | quote }}
+secondaryUserstore = {{ .Values.deploymentToml.otp.sms.secondaryUserstore | quote }}
+SMSOTPMandatory = {{ .Values.deploymentToml.otp.sms.mandatory }}
+SendOtpToFederatedMobile = {{ .Values.deploymentToml.otp.sms.federatedMobile  }}
+federatedMobileAttributeKey = {{ .Values.deploymentToml.otp.sms.federatedMobileAttributeKey | quote }}
+CaptureAndUpdateMobileNumber = {{ .Values.deploymentToml.otp.sms.captureAndUpdateMobileNumber }}
+SendOTPDirectlyToMobile = {{ .Values.deploymentToml.otp.sms.directlyToMobile }}
+redirectToMultiOptionPageOnFailure = {{ .Values.deploymentToml.otp.sms.redirectToMultiOptionPageOnFailure }}
+EnableAccountLockingForFailedAttempts = {{ .Values.deploymentToml.otp.sms.userAccountLockEnabled }}
 
-{{- if .Values.deploymentToml.userAccountLock.totpEnabled }}
+[authentication.authenticator.totp]
+enable={{ .Values.deploymentToml.totp.enabled }}
+
 [authentication.authenticator.totp.parameters]
-EnableAccountLockingForFailedAttempts = true
-{{- end }}
-
-{{- end }}
+encodingMethod={{ .Values.deploymentToml.totp.encodingMethod | quote }}
+timeStepSize={{ .Values.deploymentToml.totp.timeStepSize | quote }}
+windowSize={{ .Values.deploymentToml.totp.windowSize | quote }}
+authenticationMandatory={{ .Values.deploymentToml.totp.authenticationMandatory }}
+enrolUserInAuthenticationFlow={{ .Values.deploymentToml.totp.enrolUserInAuthenticationFlow }}
+usecase={{ .Values.deploymentToml.totp.usecase | quote }}
+secondaryUserstore={{ .Values.deploymentToml.totp.secondaryUserstore | quote }}
+TOTPAuthenticationEndpointURL={{ .Values.deploymentToml.totp.authenticationEndpointURL | quote }}
+TOTPAuthenticationEndpointErrorPage={{ .Values.deploymentToml.totp.authenticationEndpointErrorPage | quote }}
+TOTPAuthenticationEndpointEnableTOTPPage={{ .Values.deploymentToml.totp.authenticationEndpointEnableTOTPPage | quote }}
+Issuer={{ .Values.deploymentToml.totp.issuer | quote }}
+UseCommonIssuer={{ .Values.deploymentToml.totp.useCommonIssuer }}
+EnableAccountLockingForFailedAttempts = {{ .Values.deploymentToml.totp.userAccountLockEnabled }}
 
 {{- if .Values.deploymentToml.extraConfigs }}
 {{ .Values.deploymentToml.extraConfigs }}

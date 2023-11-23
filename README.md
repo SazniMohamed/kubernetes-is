@@ -366,6 +366,39 @@ export NAMESPACE=<NAMESPACE>
 | deploymentToml.keystore.tls.type | string | `"JKS"` |  |
 | deploymentToml.oauth.tokenCleanup | bool | `false` | Enable/Disable the internal token cleanup process. Ref: https://is.docs.wso2.com/en/6.0.0/deploy/remove-unused-tokens-from-the-database/#! |
 | deploymentToml.oauth.tokenGeneration.includeUsernameInAccessToken | bool | `false` | Add UserName Assertions in Access Tokens. Ref: https://is.docs.wso2.com/en/6.0.0/deploy/enable-assertions-in-access-tokens/ |
+| deploymentToml.otp.email.addressRequestPage | string | `"https://localhost:9443/emailotpauthenticationendpoint/emailAddress.jsp"` |  |
+| deploymentToml.otp.email.authenticationEndpointErrorPage | string | `"https://localhost:9443/emailotpauthenticationendpoint/emailotpError.jsp"` | Error page that will be displayed in case of an authentication failure. |
+| deploymentToml.otp.email.authenticationEndpointURL | string | `"https://localhost:9443/emailotpauthenticationendpoint/emailotp.jsp"` | Authentication endpoint URL of the authenticator. |
+| deploymentToml.otp.email.captureAndUpdateEmailAddress | bool | `true` |  |
+| deploymentToml.otp.email.emailAddressRegex | string | `"(?&lt;=.{1}).(?=.*@)"` |  |
+| deploymentToml.otp.email.enableByUserClaim | bool | `true` |  |
+| deploymentToml.otp.email.enabled | bool | `false` | Enable email OTP. Ref: https://is.docs.wso2.com/en/latest/guides/mfa/email-otp-config-advanced/#email-otp-configurations |
+| deploymentToml.otp.email.federatedEmailAttributeKey | string | `"email"` |  |
+| deploymentToml.otp.email.mandatory | bool | `false` | This parmeter defines whether email OTP is enforced as the second step of the 2FA/MFA or not. |
+| deploymentToml.otp.email.secondaryUserstore | string | `"primary"` | You can define multiple user stores per tenant as comma separated values. |
+| deploymentToml.otp.email.sendOTPToFederatedEmailAttribute | bool | `false` |  |
+| deploymentToml.otp.email.showEmailAddressInUI | bool | `true` |  |
+| deploymentToml.otp.email.tokenExpirationTime | int | `300000` |  |
+| deploymentToml.otp.email.useEventHandlerBasedEmailSender | bool | `true` |  |
+| deploymentToml.otp.email.usecase | string | `"local"` | This parameter defines how the email ID will be retrieved. |
+| deploymentToml.otp.email.userAccountLockEnabled | bool | `false` | Enable account locking by email OTP. Ref: https://is.docs.wso2.com/en/latest/guides/identity-lifecycles/lock-accounts-by-failed-otp-attempts/ |
+| deploymentToml.otp.sms.authenticationEndpointErrorPage | string | `"/smsotpauthenticationendpoint/smsotpError.jsp"` |  |
+| deploymentToml.otp.sms.authenticationEndpointURL | string | `"/smsotpauthenticationendpoint/smsotp.jsp"` |  |
+| deploymentToml.otp.sms.backupCode | bool | `true` |  |
+| deploymentToml.otp.sms.captureAndUpdateMobileNumber | bool | `true` |  |
+| deploymentToml.otp.sms.directlyToMobile | bool | `false` |  |
+| deploymentToml.otp.sms.enableByUserClaim | bool | `true` |  |
+| deploymentToml.otp.sms.enabled | bool | `false` | Enable SMS OTP. Ref: https://is.docs.wso2.com/en/latest/guides/mfa/sms-otp-config-advanced/ |
+| deploymentToml.otp.sms.federatedMobile | bool | `false` |  |
+| deploymentToml.otp.sms.federatedMobileAttributeKey | string | `"mobile"` |  |
+| deploymentToml.otp.sms.mandatory | bool | `false` |  |
+| deploymentToml.otp.sms.mobileNumberRegPage | string | `"/smsotpauthenticationendpoint/mobile.jsp"` |  |
+| deploymentToml.otp.sms.redirectToMultiOptionPageOnFailure | bool | `false` |  |
+| deploymentToml.otp.sms.resendEnable | bool | `true` |  |
+| deploymentToml.otp.sms.retryEnable | bool | `true` |  |
+| deploymentToml.otp.sms.secondaryUserstore | string | `"primary"` |  |
+| deploymentToml.otp.sms.usecase | string | `"local"` |  |
+| deploymentToml.otp.sms.userAccountLockEnabled | bool | `false` | Enable account locking by email OTP. Ref: https://is.docs.wso2.com/en/latest/guides/identity-lifecycles/lock-accounts-by-failed-otp-attempts/ |
 | deploymentToml.outputAdapter.email.enableAuthentication | bool | `true` |  |
 | deploymentToml.outputAdapter.email.enableStartTls | bool | `true` |  |
 | deploymentToml.outputAdapter.email.enabled | bool | `false` | Enable the email sender. Ref: https://is.docs.wso2.com/en/latest/deploy/configure-email-sending/#configure-the-email-sender-globally |
@@ -383,6 +416,20 @@ export NAMESPACE=<NAMESPACE>
 | deploymentToml.superAdmin.createAdminAccount | bool | `true` | Create Carbon console admin account |
 | deploymentToml.superAdmin.encryptedPassword | string | `""` | Carbon console admin account password |
 | deploymentToml.superAdmin.username | string | `""` | Carbon console admin account username |
+| deploymentToml.totp.authenticationEndpointEnableTOTPPage | string | `"authenticationendpoint/totp_enroll.do"` |  |
+| deploymentToml.totp.authenticationEndpointErrorPage | string | `"authenticationendpoint/totp_error.do"` |  |
+| deploymentToml.totp.authenticationEndpointURL | string | `"authenticationendpoint/totp.do"` |  |
+| deploymentToml.totp.authenticationMandatory | bool | `true` |  |
+| deploymentToml.totp.enabled | bool | `false` |  |
+| deploymentToml.totp.encodingMethod | string | `"Base32"` |  |
+| deploymentToml.totp.enrolUserInAuthenticationFlow | bool | `true` |  |
+| deploymentToml.totp.issuer | string | `"WSO2"` |  |
+| deploymentToml.totp.secondaryUserstore | string | `"primary"` |  |
+| deploymentToml.totp.timeStepSize | string | `"30"` |  |
+| deploymentToml.totp.useCommonIssuer | bool | `true` |  |
+| deploymentToml.totp.usecase | string | `"local"` |  |
+| deploymentToml.totp.userAccountLockEnabled | bool | `false` | Enable account locking by OTP. Ref: https://is.docs.wso2.com/en/latest/guides/identity-lifecycles/lock-accounts-by-failed-otp-attempts/ |
+| deploymentToml.totp.windowSize | string | `"3"` |  |
 | deploymentToml.transport.https.properties.server | string | `"WSO2 Carbon Server"` | Server name in HTTP response headers. Ref: https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#change-the-server-name-in-http-response-headers |
 | deploymentToml.transport.https.sslHostConfig.properties.ciphers | string | `"TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384, TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384, TLS_DHE_DSS_WITH_AES_256_GCM_SHA384, TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256, TLS_DHE_DSS_WITH_AES_128_GCM_SHA256, TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384, TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384, TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384, TLS_DHE_DSS_WITH_AES_256_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA, TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA, TLS_ECDH_RSA_WITH_AES_256_CBC_SHA, TLS_DHE_DSS_WITH_AES_256_CBC_SHA, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256, TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256, TLS_DHE_DSS_WITH_AES_128_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA, TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA, TLS_ECDH_RSA_WITH_AES_128_CBC_SHA, TLS_DHE_DSS_WITH_AES_128_CBC_SHA, TLS_EMPTY_RENEGOTIATION_INFO_SCSVF"` | Configure TSL ciphers in the HTTPS transport. Ref: https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#disable-weak-ciphers |
 | deploymentToml.transport.https.sslHostConfig.properties.protocols | string | `"+TLSv1, +TLSv1.1, +TLSv1.2, +TLSv1.3"` | Enabling SSL protocols in the HTTPS transport. Ref: https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#enabling-ssl-protocols-in-the-wso2-is |
@@ -395,9 +442,6 @@ export NAMESPACE=<NAMESPACE>
 | deploymentToml.userAccountLock.loginAttempts.allowedFailedAttempts | int | `5` | This indicates the number of consecutive attempts that a user can try to log in without the account getting locked. If the value you specify is 2, the account gets locked if the login attempt fails twice. |
 | deploymentToml.userAccountLock.loginAttempts.autoUnlockAfter | int | `5` | The time specified here is in minutes. Authentication can be attempted once this time has passed. |
 | deploymentToml.userAccountLock.loginAttempts.autoUnlockTimeIncrementRatio | int | `2` | This indicates how much the account unlock timeout is incremented by after each failed login attempt |
-| deploymentToml.userAccountLock.otp.emailEnabled | bool | `false` | Enable account locking by email OTP. Ref: https://is.docs.wso2.com/en/latest/guides/identity-lifecycles/lock-accounts-by-failed-otp-attempts/ |
-| deploymentToml.userAccountLock.otp.smsEnabled | bool | `false` | Enable account locking by SMS otp. Ref: https://is.docs.wso2.com/en/latest/guides/identity-lifecycles/lock-accounts-by-failed-otp-attempts/ |
-| deploymentToml.userAccountLock.totpEnabled | bool | `false` | Enable account locking by OTP. Ref: https://is.docs.wso2.com/en/latest/guides/identity-lifecycles/lock-accounts-by-failed-otp-attempts/ |
 | deploymentToml.userStore.type | string | `"database_unique_id"` |  |
 | k8sKindAPIVersions | object | `{"configMap":"v1","deployment":"apps/v1","horizontalPodAutoscaler":"autoscaling/v1","ingress":"networking.k8s.io/v1","persistentVolume":"v1","persistentVolumeClaim":"v1","podDisruptionBudget":"policy/v1","role":"rbac.authorization.k8s.io/v1","roleBinding":"rbac.authorization.k8s.io/v1","secret":"v1","secretProviderClass":"secrets-store.csi.x-k8s.io/v1","service":"v1","serviceAccount":"v1"}` | K8s API versions for K8s kinds |
 | k8sKindAPIVersions.configMap | string | `"v1"` | K8s API version for kind ConfigMap |

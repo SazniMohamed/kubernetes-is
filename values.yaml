@@ -383,13 +383,67 @@ deploymentToml:
       autoUnlockTimeIncrementRatio: 2
       # -- The time specified here is in minutes. Authentication can be attempted once this time has passed.
       autoUnlockAfter: 5
-    otp:
-      # -- Enable account locking by SMS otp. Ref: https://is.docs.wso2.com/en/latest/guides/identity-lifecycles/lock-accounts-by-failed-otp-attempts/
-      smsEnabled: false
+  otp:
+    email:
+      # -- Enable email OTP. Ref: https://is.docs.wso2.com/en/latest/guides/mfa/email-otp-config-advanced/#email-otp-configurations
+      enabled: false
+      # -- Authentication endpoint URL of the authenticator.
+      authenticationEndpointURL: "https://localhost:9443/emailotpauthenticationendpoint/emailotp.jsp"
+      # -- Error page that will be displayed in case of an authentication failure.
+      authenticationEndpointErrorPage: "https://localhost:9443/emailotpauthenticationendpoint/emailotpError.jsp"
+      addressRequestPage: "https://localhost:9443/emailotpauthenticationendpoint/emailAddress.jsp"
+      # -- This parameter defines how the email ID will be retrieved.
+      usecase: "local"
+      # -- You can define multiple user stores per tenant as comma separated values.
+      secondaryUserstore: "primary"
+      # -- This parmeter defines whether email OTP is enforced as the second step of the 2FA/MFA or not.
+      mandatory: false
+      sendOTPToFederatedEmailAttribute: false
+      federatedEmailAttributeKey: "email"
+      enableByUserClaim: true
+      captureAndUpdateEmailAddress: true
+      showEmailAddressInUI: true
+      useEventHandlerBasedEmailSender: true
+      emailAddressRegex: '(?&lt;=.{1}).(?=.*@)'
+      tokenExpirationTime: 300000
       # -- Enable account locking by email OTP. Ref: https://is.docs.wso2.com/en/latest/guides/identity-lifecycles/lock-accounts-by-failed-otp-attempts/
-      emailEnabled: false
+      userAccountLockEnabled: false
+    sms:
+      # -- Enable SMS OTP. Ref: https://is.docs.wso2.com/en/latest/guides/mfa/sms-otp-config-advanced/
+      enabled: false
+      authenticationEndpointURL: "/smsotpauthenticationendpoint/smsotp.jsp"
+      authenticationEndpointErrorPage: "/smsotpauthenticationendpoint/smsotpError.jsp"
+      mobileNumberRegPage: "/smsotpauthenticationendpoint/mobile.jsp"
+      retryEnable: true
+      resendEnable: true
+      backupCode: true
+      enableByUserClaim: true
+      usecase: "local"
+      secondaryUserstore: "primary"
+      mandatory: false
+      federatedMobile: false
+      federatedMobileAttributeKey: "mobile"
+      captureAndUpdateMobileNumber: true
+      directlyToMobile: false
+      redirectToMultiOptionPageOnFailure: false
+      # -- Enable account locking by email OTP. Ref: https://is.docs.wso2.com/en/latest/guides/identity-lifecycles/lock-accounts-by-failed-otp-attempts/
+      userAccountLockEnabled: false
+  totp:
+    enabled: false
+    encodingMethod: "Base32"
+    timeStepSize: "30"
+    windowSize: "3"
+    authenticationMandatory: true
+    enrolUserInAuthenticationFlow: true
+    usecase: "local"
+    secondaryUserstore: "primary"
+    authenticationEndpointURL: "authenticationendpoint/totp.do"
+    authenticationEndpointErrorPage: "authenticationendpoint/totp_error.do"
+    authenticationEndpointEnableTOTPPage: "authenticationendpoint/totp_enroll.do"
+    issuer: "WSO2"
+    useCommonIssuer: true
     # -- Enable account locking by OTP. Ref: https://is.docs.wso2.com/en/latest/guides/identity-lifecycles/lock-accounts-by-failed-otp-attempts/
-    totpEnabled: false
+    userAccountLockEnabled: false
   # -- Add custom configurations to deployment.toml.
   extraConfigs: #|
     # [transport.https.properties]
