@@ -1,5 +1,5 @@
 [server]
-hostname = {{ .Values.deployment.ingress.hostName | quote }}
+hostname = {{ .Values.deployment.config.hostName | quote }}
 node_ip = "$env{NODE_IP}"
 base_path = "https://$ref{server.hostname}:${carbon.management.port}"
 offset = {{ .Values.deploymentToml.server.offset | quote }}
