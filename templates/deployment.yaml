@@ -154,12 +154,14 @@ spec:
             - name: {{ template "..fullname" . }}-log4j2-properties
               mountPath: /home/wso2carbon/wso2-config-volume/repository/conf/log4j2.properties
               subPath: log4j2.properties
+            {{- if .Values.deployment.secretStore.azure.enabled }}
             - name: secrets-volume
               mountPath: /mnt/secrets-store
               readOnly: true
             - name: {{ template "..fullname" . }}-entrypoint
               mountPath: /home/wso2carbon/docker-entrypoint.sh
               subPath: docker-entrypoint.sh
+            {{- end }}
           {{- if .Values.deployment.persistence.enabled }}
             - name: runtime-persistent-data-storage
               mountPath: /home/wso2carbon/{{ .Values.deployment.productPackName }}-{{ .Values.deployment.buildVersion }}/repository/tenants
@@ -191,6 +193,7 @@ spec:
         - name: keystores
           secret:
             secretName: {{ .Values.deployment.JKSSecretName }}
+        {{- if .Values.wso2.deployment.wso2is.config.secureVault.enabled }}
         - name: secrets-volume
           csi:
             driver: secrets-store.csi.k8s.io
@@ -205,6 +208,7 @@ spec:
           configMap:
             name: {{ template "..fullname" . }}-entrypoint
             defaultMode: 0407
+        {{- end }}
         {{- if .Values.deployment.persistence.enabled }}
         - name: runtime-persistent-data-storage
           persistentVolumeClaim:
