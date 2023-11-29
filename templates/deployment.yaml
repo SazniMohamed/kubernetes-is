@@ -193,7 +193,7 @@ spec:
         - name: keystores
           secret:
             secretName: {{ .Values.deployment.JKSSecretName }}
-        {{- if .Values.wso2.deployment.wso2is.config.secureVault.enabled }}
+        {{- if .Values.deployment.secretStore.azure.enabled }}
         - name: secrets-volume
           csi:
             driver: secrets-store.csi.k8s.io
