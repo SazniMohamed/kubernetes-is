@@ -257,3 +257,6 @@ EnableAccountLockingForFailedAttempts = {{ .Values.deploymentToml.totp.userAccou
 {{- if .Values.deploymentToml.extraConfigs }}
 {{ .Values.deploymentToml.extraConfigs }}
 {{- end }}
+
+[system_applications]
+read_only_apps = []
