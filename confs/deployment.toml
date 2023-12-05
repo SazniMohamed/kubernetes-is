@@ -134,29 +134,6 @@ jmx_enable = false
 {{- end }}
 {{- end }}
 
-[datasource.WSO2ConsentDS]
-id = "WSO2ConsentDS"
-type = {{ .Values.deploymentToml.database.consent.type | quote }}
-url = {{ .Values.deploymentToml.database.consent.url | quote }}
-{{- if .Values.deployment.secretStore.azure.enabled }}
-username = "$secret{CONSENT-DB-USER-USERNAME}"
-password = "$secret{CONSENT-DB-USER-PASSWORD}"
-{{- else }}
-username = {{ .Values.deploymentToml.database.consent.username | quote }}
-password = {{ .Values.deploymentToml.database.consent.password | quote }}
-{{- end }}
-
-{{- if .Values.deploymentToml.database.consent.poolOptions }}
-[datasource.WSO2ConsentDS.pool_options]
-{{- range $key, $value := .Values.deploymentToml.database.consent.poolOptions }}
-{{ $key }} = {{ $value | quote }}
-{{- end }}
-{{- end }}
-
-[authentication.consent]
-prompt= false
-data_source="jdbc/WSO2CONSENT_DB"
-
 # Block all unused fileupload with super tenant permissions (SECURITYINTERNAL-1738)
 [[resource.access_control]]
 context="(.*)/fileupload/service(.*)"
