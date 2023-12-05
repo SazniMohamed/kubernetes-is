@@ -200,8 +200,8 @@ enabled = false
 [owasp.csrfguard]
 enable = "false"
 
-[versioning_configuration]
-enable_versioning_properties=true
-enable_versioning_comments=true
-enable_versioning_tags=true
-enable_versioning_ratings=true
+# [versioning_configuration]
+# enable_versioning_properties=true
+# enable_versioning_comments=true
+# enable_versioning_tags=true
+# enable_versioning_ratings=true
