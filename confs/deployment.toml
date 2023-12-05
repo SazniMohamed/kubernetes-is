@@ -173,7 +173,7 @@ pattern = "%{X-Forwarded-For}i %t %h %A %a %{Referer}i %l %S %{User-Agent}i %U %
 enable=true
 
 [tenant_mgt]
-enable_email_domain = true
+enable_email_domain = false
 
 [event.default_listener.identity_mgt]
 priority= "50"
