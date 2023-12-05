@@ -175,17 +175,17 @@ enable=true
 [tenant_mgt]
 enable_email_domain = false
 
-[event.default_listener.identity_mgt]
-priority= "50"
-enable = true
+# [event.default_listener.identity_mgt]
+# priority= "50"
+# enable = true
 
-[event.default_listener.governance_identity_mgt]
-priority= "95"
-enable = false
+# [event.default_listener.governance_identity_mgt]
+# priority= "95"
+# enable = false
 
-[event.default_listener.governance_identity_store]
-priority= "97"
-enable = false
+# [event.default_listener.governance_identity_store]
+# priority= "97"
+# enable = false
 
 [identity_mgt]
 password_reset_email.enable_recaptcha=false
