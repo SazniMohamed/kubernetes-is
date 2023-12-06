@@ -205,3 +205,11 @@ enable = "false"
 # enable_versioning_comments=true
 # enable_versioning_tags=true
 # enable_versioning_ratings=true
+
+[oauth.token_cleanup]
+enable = false
+
+[session_data.cleanup]
+enable_expired_data_cleanup = false
+clean_logged_out_sessions_at_immediate_cycle = false
+enable_pre_session_data_cleanup = false
