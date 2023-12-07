@@ -15,7 +15,7 @@ deployment:
     profile: "runtime/default"
   ingress:
     # -- Host name of the Identity server as Key Manager
-    hostName: "wso2is.com"
+    hostName: "{IS_HOSTNAME}"
     # -- Ingress class name
     ingressClassName: "nginx"
     # -- K8s TLS secret for configured hostname
@@ -41,11 +41,11 @@ deployment:
         limit_req_status 429;
   image:
     # -- Container image registry host name
-    registry: ""
+    registry: "{CONTAINER_REGISTRY_HOSTNAME}"
     # -- Container image repository name
-    repository: ""
+    repository: "{IMAGE_REPOSITORY_NAME}"
     # -- Container image digest
-    digest: ""
+    digest: "{IMAGE_DIGEST}"
     # -- Refer to the Kubernetes documentation on updating images (Ref: https://kubernetes.io/docs/concepts/containers/images/#updating-images)
     pullPolicy: "Always"
   # -- Progress deadline seconds where the Deployment controller waits before indicating (in the Deployment status) that the Deployment progress has stalled.
@@ -165,16 +165,16 @@ deployment:
       enabled: false
       keyVault:
         # -- Name of the target Azure Key Vault instance
-        name: ""
+        name: "{AZURE_KEY_VAULT_NAME}"
         # -- Subscription ID of the target Azure Key Vault
-        subscriptionId: ""
+        subscriptionId: "{AZURE_SUBSCRIPTION_ID}"
         # -- Name of the Azure Resource Group to which the target Azure Key Vault belongs
-        resourceGroup: ""
+        resourceGroup: "{AZURE_KEY_VAULT_RG}"
         # -- Service Principal created for transacting with the target Azure Key Vault
         # Ref: https://github.com/Azure/secrets-store-csi-driver-provider-azure/blob/master/docs/service-principal-mode.md
-        servicePrincipalAppID: ""
+        servicePrincipalAppID: "{AZURE_KEY_VAULT_SP_APP_ID}"
         # -- Azure Active Directory tenant ID of the target Key Vault
-        tenantId: ""
+        tenantId: "{AZURE_TENANT_ID}"
         # -- Azure Key Vault secret name of the internal keystore password
         secretName: "INTERNAL-KEYSTORE-PASSWORD-DECRYPTED"
       # -- The name of the Kubernetes secret that contains the service principal credentials to access Azure Key Vault. Ref: https://azure.github.io/secrets-store-csi-driver-provider-azure/docs/configurations/identity-access-modes/service-principal-mode/#configure-service-principal-to-access-keyvault
@@ -188,9 +188,9 @@ deploymentToml:
     type: "database_unique_id"
   superAdmin:
     # -- Carbon console admin account username
-    username: ""
+    username: "{SUPER_ADMIN_USERNAME}"
     # -- Carbon console admin account password
-    encryptedPassword: ""
+    encryptedPassword: "{SUPER-ADMIN-ENCRYPTED-PASSWORD}"
     # -- Create Carbon console admin account
     createAdminAccount: true
   account:
@@ -198,12 +198,12 @@ deploymentToml:
       endpoint:
         auth:
           # -- Configure client authentication app password hash. Ref https://is.docs.wso2.com/en/latest/deploy/security/product-level-security-guidelines/#configure-client-authentication
-          hash: ""
+          hash: "{ACCOUNT_RECOVERY_ENDPOINT_AUTH_HASH}"
   identity:
     authFramework:
       endpoint:
         # -- Configure client authentication encrypted app password. Ref https://is.docs.wso2.com/en/latest/deploy/security/product-level-security-guidelines/#configure-client-authentication
-        encryptedAppPassword: ""
+        encryptedAppPassword: "{IDENTITY-AUTH-FRAMEWORK-ENDPOINT-ENCRYPTED-APP-PASSWORD}"
   clustering:
     # -- Enable clustering. Ref: https://is.docs.wso2.com/en/latest/deploy/configure-hazelcast/
     enabled: true
@@ -218,11 +218,11 @@ deploymentToml:
       # -- The SQL server type(ex: mysql, mssql)
       type: "mssql"
       # -- The database username
-      username: ""
+      username: "{DATABASE_IDENTITY_USER}"
       # -- The database JDBC URL
-      url: ""
+      url: "{DATABASE_IDENTITY_URL}"
       # -- The secure vault encrypted database password
-      encryptedPassword: ""
+      encryptedPassword: "{DATABASE-IDENTITY-ENCRYPTED-PASSWORD}"
       # -- The database JDBC driver
       driver: "com.microsoft.sqlserver.jdbc.SQLServerDriver"
       # -- The database pool options
@@ -237,11 +237,11 @@ deploymentToml:
       # -- The SQL server type(ex: mysql, mssql)
       type: "mssql"
       # -- The database username
-      username: ""
+      username: "{DATABASE_SHARED_USER}"
       # -- The database JDBC URL
-      url: ""
+      url: "{DATABASE_SHARED_URL}"
       # -- The secure vault encrypted database password
-      encryptedPassword: ""
+      encryptedPassword: "{DATABASE-SHARED-ENCRYPTED-PASSWORD}"
       # -- The database JDBC driver
       driver: "com.microsoft.sqlserver.jdbc.SQLServerDriver"
       # -- The database pool options
@@ -256,11 +256,11 @@ deploymentToml:
       # -- The SQL server type(ex: mysql, mssql)
       type: "mssql"
       # -- The database username
-      username: ""
+      username: "{DATABASE_USER_USER}"
       # -- The database JDBC URL
-      url: ""
+      url: "{DATABASE_USER_URL}"
       # -- The secure vault encrypted database password
-      encryptedPassword: ""
+      encryptedPassword: "{DATABASE-USER-ENCRYPTED-PASSWORD}"
       # -- The database JDBC driver
       driver: "com.microsoft.sqlserver.jdbc.SQLServerDriver"
       # -- The database pool options
@@ -275,11 +275,11 @@ deploymentToml:
       # -- The SQL server type(ex: mysql, mssql)
       type: "mssql"
       # -- The database username
-      username: ""
+      username: "{DATABASE_CONSENT_USER}"
       # -- The database JDBC URL
-      url: ""
+      url: "{DATABASE_CONSENT_URL}"
       # -- The secure vault encrypted database password
-      encryptedPassword: ""
+      encryptedPassword: "{DATABASE-CONSENT-ENCRYPTED-PASSWORD}"
       # -- The database JDBC driver
       driver: "com.microsoft.sqlserver.jdbc.SQLServerDriver"
       # -- The database pool options
@@ -295,11 +295,11 @@ deploymentToml:
       # -- The SQL server type(ex: mysql, mssql)
       type: "mssql"
       # -- The database username
-      username: ""
+      username: "{DATABASE_BPS_USER}"
       # -- The database JDBC URL
-      url: ""
+      url: "{DATABASE_BPS_URL}"
       # -- The secure vault encrypted database password
-      encryptedPassword: ""
+      encryptedPassword: "{DATABASE-BPS-ENCRYPTED-PASSWORD}"
       # -- The database JDBC driver
       driver: "com.microsoft.sqlserver.jdbc.SQLServerDriver"
       # -- The database pool options
@@ -314,25 +314,25 @@ deploymentToml:
     tls:
       fileName: "tls.jks"
       type: "JKS"
-      encryptedPassword: ""
+      encryptedPassword: "{KEYSTORE-TLS-ENCRYPTED-PASSWORD}"
       alias: "wso2carbon"
-      encryptedKeyPassword: ""
+      encryptedKeyPassword: "{KEYSTORE-TLS-ENCRYPTED-KEY-PASSWORD}"
     primary:
       fileName: "primaryKeyStore.jks"
       type: "JKS"
-      encryptedPassword: ""
+      encryptedPassword: "{KEYSTORE-PRIMARY-ENCRYPTED-PASSWORD}"
       alias: "wso2carbon"
-      encryptedKeyPassword: ""
+      encryptedKeyPassword: "{KEYSTORE-PRIMARY-ENCRYPTED-KEY-PASSWORD}"
     internal:
       fileName: "internalKeyStore.jks"
       type: "JKS"
-      encryptedPassword: ""
+      encryptedPassword: "{KEYSTORE-INTERNAL-ENCRYPTED-PASSWORD}"
       alias: "wso2carbon"
-      encryptedKeyPassword: ""
+      encryptedKeyPassword: "{KEYSTORE-INTERNAL-ENCRYPTED-KEY-PASSWORD}"
   truststore:
     fileName: "client-truststore.jks"
     type: "JKS"
-    encryptedPassword: ""
+    encryptedPassword: "{TRUSTSTORE-ENCRYPTED-PASSWORD}"
   recaptcha:
     # -- Enable reCAPTCHA. Ref: https://is.docs.wso2.com/en/latest/deploy/configure-recaptcha/
     enabled: false
