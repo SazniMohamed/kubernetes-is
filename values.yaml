@@ -539,6 +539,9 @@ k8sKindAPIVersions:
   service: "v1"
   # -- k8s API verion for CSI Driver
   csi: "storage.k8s.io/v1"
+  # -- K8s API version for kind Job
+  job: "batch/v1"
+  
 # -- OpenShift API versions for OpenShift kinds
 openShiftKindAPIVersions:
   # -- OpenShift API version for kind Route

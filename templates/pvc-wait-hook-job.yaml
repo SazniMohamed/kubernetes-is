@@ -17,7 +17,7 @@
 {{- if .Values.deployment.persistence.enabled }}
 {{- if .Values.deployment.persistence.aws.enabled }}
 ---
-apiVersion: batch/v1
+apiVersion: {{ .Values.k8sKindAPIVersions.job }}
 kind: Job
 metadata:
   name: {{ .Release.Name }}-wait-for-pvc-job
