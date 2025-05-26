@@ -44,11 +44,11 @@ spec:
     - dir_mode=0777
     - file_mode=0777
     - uid={{ .Values.deployment.securityContext.runAsUser }}
-{{- if .Values.deployment.securityContext.enableRunAsGroup }}
-    - gid={{ .Values.deployment.securityContext.runAsGroup }}
-{{- else }}
-    - gid={{ .Values.deployment.securityContext.runAsUser }}
-{{- end }}
+    - gid={{- if .Values.deployment.securityContext.enableRunAsGroup }}
+          {{ .Values.deployment.securityContext.runAsGroup }}
+      {{- else }}
+          {{ .Values.deployment.securityContext.runAsUser }}
+      {{- end }}
     - cache=strict
   {{- else if .Values.deployment.persistence.aws.enabled }}
   csi:

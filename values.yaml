@@ -50,7 +50,7 @@ deployment:
       # Sets the size of the buffer proxy_buffer_size used for reading the first part of the response received from the proxied server. By default proxy buffer size is set as "64k".(Ref: https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md#proxy-buffer-size)
       nginx.ingress.kubernetes.io/proxy-buffer-size: "64k"
     azure:
-      enabled: false
+      enabled: true
       annotations:
         !!merge <<: *commonAnnotations
         nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
@@ -60,8 +60,9 @@ deployment:
         !!merge <<: *commonAnnotations
         nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
   rbac:
-    annotations:
-      eks.amazonaws.com/role-arn: "null"
+    aws:
+      annotations:
+        eks.amazonaws.com/role-arn: "null"
   image:
     # -- Container image registry host name
     registry: "docker.wso2.com"
@@ -188,7 +189,7 @@ deployment:
       userstores: "userstores"
     azure:
       # -- Enable persistence for artifact sharing using Azure file share
-      enabled: false
+      enabled: true
       # -- Azure Storage Account credentials to access the file shares
       # -- Ref: https://docs.microsoft.com/en-us/azure/aks/azure-files-volume#create-a-kubernetes-secret
       # -- Names of Azure File shares for persisted data
@@ -207,7 +208,7 @@ deployment:
     enabled: false
     azure:
       # -- Enable Azure Key Vault integration.
-      enabled: false
+      enabled: true
       keyVault:
         # -- Name of the target Azure Key Vault instance
         name: ""
@@ -541,7 +542,6 @@ k8sKindAPIVersions:
   csi: "storage.k8s.io/v1"
   # -- K8s API version for kind Job
   job: "batch/v1"
-  
 # -- OpenShift API versions for OpenShift kinds
 openShiftKindAPIVersions:
   # -- OpenShift API version for kind Route

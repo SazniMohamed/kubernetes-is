@@ -10,13 +10,20 @@
 # --------------------------------------------------------------------------------------
 
 FROM golang:1.22-alpine AS build
+
+# Set the working directory inside the container & copy go.mod and go.sum files to enable dependency caching
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
+
+# Copy the application source code into the container & build the Go application
 COPY ./application ./application
 RUN go build -ldflags="-w -s" -o /app -v ./application/secret-injector
+
+# Use a minimal runtime image & copy the compiled Go binary
 FROM gcr.io/distroless/static-debian12
 COPY --from=build /app /app
 USER nonroot:nonroot
-ENTRYPOINT ["/app"]
 
+# Define the entrypoint to run the application
+ENTRYPOINT ["/app"]

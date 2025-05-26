@@ -14,8 +14,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-{{- if .Values.deployment.persistence.enabled }}
-{{- if .Values.deployment.persistence.aws.enabled }}
+{{- if and .Values.deployment.persistence.enabled .Values.deployment.persistence.aws.enabled }}
 ---
 apiVersion: {{ .Values.k8sKindAPIVersions.job }}
 kind: Job
@@ -55,5 +54,4 @@ spec:
                 exit 1
               fi
       restartPolicy: Never
-{{- end }}
 {{- end }}

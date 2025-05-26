@@ -21,7 +21,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   {{- if .Values.deployment.persistence.aws.enabled }}
   annotations:
-    {{- toYaml .Values.deployment.rbac.annotations | nindent 4 }}
+    {{- toYaml .Values.deployment.rbac.aws.annotations | nindent 4 }}
   {{- end }}
 
 ---
@@ -65,8 +65,8 @@ metadata:
     "helm.sh/hook": pre-install
     "helm.sh/hook-weight": "-5" 
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
-    {{- if .Values.deployment.rbac.annotations }}
-    {{- toYaml .Values.deployment.rbac.annotations | nindent 4 }}
+    {{- if .Values.deployment.rbac.aws.annotations }}
+    {{- toYaml .Values.deployment.rbac.aws.annotations | nindent 4 }}
     {{- end }}
 
 ---
