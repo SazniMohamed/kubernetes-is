@@ -48,6 +48,7 @@ spec:
         {{- if .Values.deployment.secretStore.aws.enabled }}
         secret.k8s.aws/secret-name: {{ .Values.deployment.secretStore.aws.secretManager.secretName }}
         secret.k8s.aws/region: {{ .Values.deployment.secretStore.aws.secretManager.region }}
+        secret.k8s.aws/output-path: {{ .Values.deployment.secretStore.aws.secretManager.outputPath }}
         {{- end }}
     spec:
       securityContext:
@@ -77,8 +78,12 @@ spec:
                 topologyKey: topology.kubernetes.io/zone
       {{- if .Values.deployment.secretStore.aws.enabled }}
       initContainers:
-        - name: aws-secrets-manager
-          image: loshans/secret-access-init:latest
+        - name: aws-secrets-injector
+          {{- if .Values.deployment.secretStore.aws.secretManager.image.digest }}
+          image: {{ .Values.deployment.secretStore.aws.secretManager.image.registry }}/{{ .Values.deployment.secretStore.aws.secretManager.image.repository }}@{{ .Values.deployment.secretStore.aws.secretManager.image.digest }}
+          {{- else }}
+          image: {{ .Values.deployment.secretStore.aws.secretManager.image.registry }}/{{ .Values.deployment.secretStore.aws.secretManager.image.repository }}:{{ default "latest" .Values.deployment.secretStore.aws.secretManager.image.tag }}
+          {{- end }}
           env:
             - name: AWS_REGION
               valueFrom:
@@ -88,6 +93,10 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.annotations['secret.k8s.aws/secret-name']
+            - name: OUTPUT_PATH
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['secret.k8s.aws/output-path']
           volumeMounts:
             - name: secrets-volume
               mountPath: /tmp

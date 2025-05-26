@@ -225,10 +225,22 @@ deployment:
     aws:
       enabled: false
       secretManager:
+        # -- Secret Injector container image configuration
+        image:
+          # -- Container image registry host name
+          registry: ""
+          # -- Container image repository name
+          repository: ""
+          # -- Container image tag
+          tag: ""
+          # -- Container image digest
+          digest: ""
         # -- AWS Secret Manager secret name of the internal keystore password
         secretName: "INTERNAL-KEYSTORE-PASSWORD-DECRYPTED"
         # -- Region of the deployment
         region: ""
+        # -- Output path for the secret
+        outputPath: "/tmp/password-tmp"
   configMaps:
     entryPoint:
       defaultMode: "0407"
