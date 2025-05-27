@@ -20,3 +20,4 @@ To build the Docker image from the source code, navigate to the project's root d
 
 ```bash
 docker build -t application/aws-secrets-injector:latest -f build/Dockerfile .
+```
