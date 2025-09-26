@@ -43,9 +43,6 @@ spec:
         checksum.log4j.properties: {{ include (print $.Template.BasePath "/cm-log4j2-properties.yaml") . | sha256sum }}
         checksum.entrypoint.sh: {{ include (print $.Template.BasePath "/cm-entrypoint.yaml") . | sha256sum }}
         checksum.thrift-authentication.xml: {{ include (print $.Template.BasePath "/cm-thrift-authentication-xml.yaml") . | sha256sum }}
-        {{- if .Values.deployment.apparmor.enabled }}
-        container.apparmor.security.beta.kubernetes.io/wso2is: {{ .Values.deployment.apparmor.profile }}
-        {{- end }}
         {{- if .Values.deployment.secretStore.aws.enabled }}
         secret.k8s.aws/secret-name: {{ .Values.deployment.secretStore.aws.secretManager.secretName }}
         secret.k8s.aws/region: {{ .Values.deployment.secretStore.aws.secretManager.region }}
