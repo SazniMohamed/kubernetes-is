@@ -16,8 +16,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
-- Updated chart version to `7.2.0-1` and app version to `7.2.0`.
-- Updated copyright headers across all files to 2025.
 - Updated Docker image tags and build version to align with WSO2 IS 7.2.0.
 - Enhanced database configuration with new agent identity database pool options.
 - Improved documentation for agent identity management setup.
