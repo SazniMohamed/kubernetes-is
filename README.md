@@ -423,7 +423,7 @@ helm install "$RELEASE_NAME" wso2/identity-server --version 7.2.0-1  -n "$NAMESP
 --set deploymentToml.database.user.password="${DATABASE_USER_ENCRYPTED_PASSWORD}" \
 --set deploymentToml.database.consent.url="${DATABASE_CONSENT_URL}" \
 --set deploymentToml.database.consent.driver="com.microsoft.sqlserver.jdbc.SQLServerDriver" \
---set deploymentToml.database.consent.type="msql" \
+--set deploymentToml.database.consent.type="mssql" \
 --set deploymentToml.database.consent.username="${DATABASE_CONSENT_ENCRYPTED_USER}" \
 --set deploymentToml.database.consent.password="${DATABASE_CONSENT_ENCRYPTED_PASSWORD}" \
 --set deploymentToml.database.agentIdentity.type="mssql" \
@@ -561,13 +561,13 @@ helm install "$RELEASE_NAME" wso2/identity-server --version 7.2.0-1  -n "$NAMESP
 | deploymentToml.database.consent.password | string | `"wso2carbon"` | The database password |
 | deploymentToml.database.consent.poolOptions | string | `nil` | The database pool options |
 | deploymentToml.database.consent.type | string | `"h2"` | The SQL server type(ex: mysql, mssql) |
-| deploymentToml.database.consent.url | string | `"jdbc:h2:./repository/database/WSO2IDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE"` | The database JDBC URL |
+| deploymentToml.database.consent.url | string | `"jdbc:h2:./repository/database/WSO2IDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000"` | The database JDBC URL |
 | deploymentToml.database.consent.username | string | `"wso2carbon"` | The database username |
 | deploymentToml.database.identity.driver | string | `"org.h2.Driver"` | The database JDBC driver |
 | deploymentToml.database.identity.password | string | `"wso2carbon"` | The password |
 | deploymentToml.database.identity.poolOptions | string | `nil` | The database pool options |
 | deploymentToml.database.identity.type | string | `"h2"` | The SQL server type(ex: mysql, mssql) |
-| deploymentToml.database.identity.url | string | `"jdbc:h2:./repository/database/WSO2IDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE"` | The database JDBC URL |
+| deploymentToml.database.identity.url | string | `"jdbc:h2:./repository/database/WSO2IDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000"` | The database JDBC URL |
 | deploymentToml.database.identity.username | string | `"wso2carbon"` | The database username |
 | deploymentToml.database.shared.driver | string | `"org.h2.Driver"` | The database JDBC driver |
 | deploymentToml.database.shared.password | string | `"wso2carbon"` | The database password |
