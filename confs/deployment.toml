@@ -100,7 +100,7 @@ jmx_enable=false
 {{- end }}
 
 [datasource.AgentIdentity]
-id = "AgentIdentity"
+id ="AgentIdentity"
 url = {{ .Values.deploymentToml.database.agentIdentity.url | quote }}
 type = {{ .Values.deploymentToml.database.agentIdentity.type | quote }}
 {{- if .Values.deployment.secretStore.enabled }}
