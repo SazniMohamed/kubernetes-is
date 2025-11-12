@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [v7.2.0-1] - 2025-11-12
+
+### Added
+
+- Support for **WSO2 Identity Server 7.2.0** in Helm charts.
+- New `AgentIdentity` datasource configuration in `deployment.toml` for agent identity management.
+- Enhanced secret store integration with support for agent identity database credentials.
+
+### Changed
+
+- Updated chart version to `7.2.0-1` and app version to `7.2.0`.
+- Updated copyright headers across all files to 2025.
+- Updated Docker image tags and build version to align with WSO2 IS 7.2.0.
+- Enhanced database configuration with new agent identity database pool options.
+- Improved documentation for agent identity management setup.
+
 ## [v7.1.0-1] - 2025-04-07
 
 ### Added
