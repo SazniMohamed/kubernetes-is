@@ -71,7 +71,7 @@ deployment:
     # -- Container image digest
     digest: ""
     # -- Container image tag. Either "tag" or "digest" should defined
-    tag: "7.1.0"
+    tag: "7.2.0"
     # -- Refer to the Kubernetes documentation on updating images (Ref: https://kubernetes.io/docs/concepts/containers/images/#updating-images)
     pullPolicy: "Always"
     # -- image pull secret name
@@ -169,7 +169,7 @@ deployment:
         -Dhttpclient.hostnameVerifier=Strict -Djdk.tls.client.protocols=TLSv1.2
         -Djava.util.prefs.systemRoot=/home/wso2carbon/.java -Djava.util.prefs.userRoot=/home/wso2carbon/.java/.userPrefs
   # -- Product version
-  buildVersion: "7.1.0"
+  buildVersion: "7.2.0"
   # -- Product pack name
   productPackName: "wso2is"
   # -- Enable correlation logs
@@ -371,6 +371,25 @@ deploymentToml:
 #        validationQuery: "SELECT 1"
 #        validationInterval: "30000"
 #        defaultAutoCommit: false
+    agentIdentity:
+      # -- The SQL server type(ex: mysql, mssql)
+      type: "h2"
+      # -- The database username
+      username: "wso2carbon"
+      # -- The database JDBC URL
+      url: "jdbc:h2:./repository/database/WSO2AGENTIDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE"
+      # -- The database password
+      password: "wso2carbon"
+      # -- The database JDBC driver
+      driver: "org.h2.Driver"
+      # -- The database pool options
+      poolOptions:
+#        maxActive: "50"
+#        maxWait: "60000"
+#        minIdle: "10"
+#        validationInterval: "30000"
+#        defaultAutoCommit: true
+#        commitOnReturn: false
   keystore:
     tls:
       fileName: "wso2carbon.p12"
