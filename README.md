@@ -83,7 +83,7 @@ There are two ways to install the WSO2 Identity Server using the Helm chart.
 
 2. Install the Helm chart from the Helm repository.
     ```shell
-    helm install $RELEASE_NAME wso2/identity-server --version 7.1.0-1 \
+    helm install $RELEASE_NAME wso2/identity-server --version 7.2.0-1 \
     -n $NAMESPACE \
     --set deployment.image.registry="wso2"
     ```
@@ -337,6 +337,8 @@ export DATABASE_USER_ENCRYPTED_USER='<User database encrypted username>'
 export DATABASE_USER_ENCRYPTED_PASSWORD='<User database encrypted user password>'
 export DATABASE_CONSENT_ENCRYPTED_USER='<Consent database encrypted username>'
 export DATABASE_CONSENT_ENCRYPTED_PASSWORD='<Consent database encrypted user password>'
+export DATABASE_AGENT_IDENTITY_ENCRYPTED_USER='<Agent Identity database encrypted username>'
+export DATABASE_AGENT_IDENTITY_ENCRYPTED_PASSWORD='<Agent Identity database encrypted user password>'
 export KEYSTORE_INTERNAL_ENCRYPTED_PASSWORD='<Internal key store encrypted password>'
 export KEYSTORE_INTERNAL_ENCRYPTED_KEY_PASSWORD='<Internal key store key encrypted password>'
 export KEYSTORE_PRIMARY_ENCRYPTED_PASSWORD='<Primary key store encrypted password>'
@@ -371,6 +373,7 @@ Replace `<>` places holders with values as below,
 * **<DATABASE_SHARED_URL>**: Shared database JDBC URL
 * **<DATABASE_USER_URL>**: User database JDBC URL
 * **<DATABASE_CONSENT_URL>**: Consent database JDBC URL
+* **<DATABASE_AGENT_IDENTITY_URL>**: Agent Identity database JDBC URL
 * **<IS_HOSTNAME>**: Identity server public hostname
 * **<ACCOUNT_RECOVERY_ENDPOINT_AUTH_HASH>**: Hash value of app password
 * **<AZURE_SUBSCRIPTION_ID>**: Azure subscription ID
@@ -388,6 +391,7 @@ export DATABASE_IDENTITY_URL='<DATABASE_IDENTITY_URL>'
 export DATABASE_SHARED_URL='<DATABASE_SHARED_URL>'
 export DATABASE_USER_URL='<DATABASE_USER_URL>'
 export DATABASE_CONSENT_URL='<DATABASE_CONSENT_URL>'
+export DATABASE_AGENT_IDENTITY_URL='<DATABASE_AGENT_IDENTITY_URL>'
 export IS_HOSTNAME='<IS_HOSTNAME>'
 export ACCOUNT_RECOVERY_ENDPOINT_AUTH_HASH='<ACCOUNT_RECOVERY_ENDPOINT_AUTH_HASH>'
 export NAMESPACE='<NAMESPACE>'
@@ -396,7 +400,7 @@ export RELEASE_NAME='<RELEASE_NAME>'
 ```
 
 ```shell
-helm install "$RELEASE_NAME" wso2/identity-server --version 7.1.0-1  -n "$NAMESPACE" \
+helm install "$RELEASE_NAME" wso2/identity-server --version 7.2.0-1  -n "$NAMESPACE" \
 --set deployment.image.registry="${IMAGE_REGISTRY_HOSTNAME}" \
 --set deployment.image.repository="${IMAGE_REPOSITORY_NAME}" \
 --set deployment.image.digest="${IMAGE_DIGEST}" \
@@ -419,9 +423,14 @@ helm install "$RELEASE_NAME" wso2/identity-server --version 7.1.0-1  -n "$NAMESP
 --set deploymentToml.database.user.password="${DATABASE_USER_ENCRYPTED_PASSWORD}" \
 --set deploymentToml.database.consent.url="${DATABASE_CONSENT_URL}" \
 --set deploymentToml.database.consent.driver="com.microsoft.sqlserver.jdbc.SQLServerDriver" \
---set deploymentToml.database.consent.type="msql" \
+--set deploymentToml.database.consent.type="mssql" \
 --set deploymentToml.database.consent.username="${DATABASE_CONSENT_ENCRYPTED_USER}" \
 --set deploymentToml.database.consent.password="${DATABASE_CONSENT_ENCRYPTED_PASSWORD}" \
+--set deploymentToml.database.agentIdentity.type="mssql" \
+--set deploymentToml.database.agentIdentity.url="${DATABASE_AGENT_IDENTITY_URL}" \
+--set deploymentToml.database.agentIdentity.driver="com.microsoft.sqlserver.jdbc.SQLServerDriver" \
+--set deploymentToml.database.agentIdentity.username="${DATABASE_AGENT_IDENTITY_ENCRYPTED_USER}" \
+--set deploymentToml.database.agentIdentity.password="${DATABASE_AGENT_IDENTITY_ENCRYPTED_PASSWORD}" \
 --set deployment.externalJKS.enabled=true \
 --set deploymentToml.keystore.internal.fileName="internal.p12" \
 --set deploymentToml.keystore.internal.password="${KEYSTORE_INTERNAL_ENCRYPTED_PASSWORD}" \
@@ -463,7 +472,7 @@ helm install "$RELEASE_NAME" wso2/identity-server --version 7.1.0-1  -n "$NAMESP
 | Key | Type | Default | Description |
 |-----|------|----|-------------|
 | deployment.apparmor.profile | string | `"runtime/default"` | Apparmor profile |
-| deployment.buildVersion | string | `"7.1.0"` | Product version |
+| deployment.buildVersion | string | `"7.2.0"` | Product version |
 | deployment.enableCorrelationLogs | bool | `false` | Enable correlation logs |
 | deployment.externalJKS.enabled | bool | `false` | Mount external  keystore and trustores |
 | deployment.externalJKS.secretName | string | `"keystores"` | K8s secret name which contains JKS files |
@@ -478,7 +487,7 @@ helm install "$RELEASE_NAME" wso2/identity-server --version 7.1.0-1  -n "$NAMESP
 | deployment.image.pullPolicy | string | `"Always"` | Refer to the Kubernetes documentation on updating images (Ref: https://kubernetes.io/docs/concepts/containers/images/#updating-images) |
 | deployment.image.registry | string | `"docker.wso2.com"` | Container image registry host name |
 | deployment.image.repository | string | `"wso2is"` | Container image repository name |
-| deployment.image.tag | string | `"7.1.0"` | Container image tag. Either "tag" or "digest" should defined |
+| deployment.image.tag | string | `"7.2.0"` | Container image tag. Either "tag" or "digest" should defined |
 | deployment.ingress.annotations."nginx.ingress.kubernetes.io/affinity" | string | `"cookie"` |  |
 | deployment.ingress.annotations."nginx.ingress.kubernetes.io/backend-protocol" | string | `"HTTPS"` |  |
 | deployment.ingress.annotations."nginx.ingress.kubernetes.io/force-ssl-redirect" | string | `"true"` |  |
@@ -552,13 +561,13 @@ helm install "$RELEASE_NAME" wso2/identity-server --version 7.1.0-1  -n "$NAMESP
 | deploymentToml.database.consent.password | string | `"wso2carbon"` | The database password |
 | deploymentToml.database.consent.poolOptions | string | `nil` | The database pool options |
 | deploymentToml.database.consent.type | string | `"h2"` | The SQL server type(ex: mysql, mssql) |
-| deploymentToml.database.consent.url | string | `"jdbc:h2:./repository/database/WSO2IDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE"` | The database JDBC URL |
+| deploymentToml.database.consent.url | string | `"jdbc:h2:./repository/database/WSO2IDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000"` | The database JDBC URL |
 | deploymentToml.database.consent.username | string | `"wso2carbon"` | The database username |
 | deploymentToml.database.identity.driver | string | `"org.h2.Driver"` | The database JDBC driver |
 | deploymentToml.database.identity.password | string | `"wso2carbon"` | The password |
 | deploymentToml.database.identity.poolOptions | string | `nil` | The database pool options |
 | deploymentToml.database.identity.type | string | `"h2"` | The SQL server type(ex: mysql, mssql) |
-| deploymentToml.database.identity.url | string | `"jdbc:h2:./repository/database/WSO2IDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE"` | The database JDBC URL |
+| deploymentToml.database.identity.url | string | `"jdbc:h2:./repository/database/WSO2IDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000"` | The database JDBC URL |
 | deploymentToml.database.identity.username | string | `"wso2carbon"` | The database username |
 | deploymentToml.database.shared.driver | string | `"org.h2.Driver"` | The database JDBC driver |
 | deploymentToml.database.shared.password | string | `"wso2carbon"` | The database password |
@@ -572,6 +581,12 @@ helm install "$RELEASE_NAME" wso2/identity-server --version 7.1.0-1  -n "$NAMESP
 | deploymentToml.database.user.type | string | `"h2"` | The SQL server type(ex: mysql, mssql) |
 | deploymentToml.database.user.url | string | `"jdbc:h2:./repository/database/WSO2SHARED_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000"` | The database JDBC URL |
 | deploymentToml.database.user.username | string | `"wso2carbon"` | The database username |
+| deploymentToml.database.agentIdentity.driver | string | `"org.h2.Driver"` | The Agent Identity database JDBC driver |
+| deploymentToml.database.agentIdentity.password | string | `"wso2carbon"` | The Agent Identity database password |
+| deploymentToml.database.agentIdentity.poolOptions | string | `nil` | The Agent Identity database pool options |
+| deploymentToml.database.agentIdentity.type | string | `"h2"` | The Agent Identity SQL server type(ex: mysql, mssql) |
+| deploymentToml.database.agentIdentity.url | string | `"jdbc:h2:./repository/database/WSO2AGENTIDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000"` | The Agent Identity database JDBC URL |
+| deploymentToml.database.agentIdentity.username | string | `"wso2carbon"` | The Agent Identity database username |
 | deploymentToml.encryption.key | string | `"3cc0481b70794667b5bee7e2beed2de4"` | Configure symmetric key encryption key. Ref https://is.docs.wso2.com/en/latest/deploy/security/symmetric-encryption/use-symmetric-encryption/ |
 | deploymentToml.extraConfigs | string | `nil` | Add custom configurations to deployment.toml. |
 | deploymentToml.identity.authFramework.endpoint.appPassword | string | `"dashboard"` | Configure client authentication encrypted app password. Ref https://is.docs.wso2.com/en/latest/deploy/security/product-level-security-guidelines/#configure-client-authentication |
