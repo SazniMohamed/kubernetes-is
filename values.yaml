@@ -24,7 +24,7 @@ wso2:
 deployment:
   apparmor:
     # -- Flag to enable Apparmor
-    enabled: true
+    enabled: false
     # -- Apparmor profile
     profile: "RuntimeDefault"
   ingress:
@@ -59,13 +59,17 @@ deployment:
       annotations:
         !!merge <<: *commonAnnotations
         nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+  gateway:
+    enabled: true
+    gatewayClassName: envoy-gateway
+    hostName: "wso2is.com"
   rbac:
     aws:
       annotations:
         eks.amazonaws.com/role-arn: "null"
   image:
     # -- Container image registry host name
-    registry: "docker.wso2.com"
+    registry: wso2
     # -- Container image repository name
     repository: "wso2is"
     # -- Container image digest
@@ -155,12 +159,12 @@ deployment:
       # -- The minimum amount of memory that should be allocated for a Pod
       memory: "2Gi"
       # -- The minimum amount of CPU that should be allocated for a Pod
-      cpu: "2"
+      cpu: "1500m"
     limits:
       # -- The maximum amount of memory that should be allocated for a Pod
       memory: "4Gi"
       # -- The maximum amount of CPU that should be allocated for a Pod
-      cpu: "3"
+      cpu: "1750m"
     jvm:
       # -- JVM memory options
       memOpts: "-Xms2048m -Xmx2048m"
@@ -565,3 +569,5 @@ k8sKindAPIVersions:
 openShiftKindAPIVersions:
   # -- OpenShift API version for kind Route
   route: "route.openshift.io/v1"
+gatewayKindAPIVersions:
+  gateway: "gateway.networking.k8s.io/v1"
