@@ -15,24 +15,10 @@
 # specific language governing permissions and limitations
 # under the License.
 
-apiVersion: {{ .Values.gatewayKindAPIVersions.gateway }}
-kind: Gateway
+apiVersion: {{ .Values.gatewayKindAPIVersions.gatewayClass }}
+kind: GatewayClass
 metadata:
-  name: {{ template "..fullname" . }}-gateway
-  namespace: {{ .Release.Namespace }}
+  name: {{ .Values.deployment.gateway.gatewayClassName }}
 spec:
-  gatewayClassName: {{ .Values.deployment.gateway.gatewayClassName }}
-  listeners:
-    - name: {{ template "..fullname" . }}-listener
-      protocol: HTTPS
-      port: 443
-      hostname: {{ .Values.deployment.gateway.hostName | quote }}
-      tls:
-        mode: Terminate
-        certificateRefs:
-          - kind: Secret
-            name: {{ .Values.deployment.gateway.tlsSecretsName  }}
-      allowedRoutes:
-        namespaces:
-          from: Same
+  controllerName: gateway.envoyproxy.io/gatewayclass-controller
 {{- end }}

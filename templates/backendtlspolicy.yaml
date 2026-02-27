@@ -15,24 +15,20 @@
 # specific language governing permissions and limitations
 # under the License.
 
-apiVersion: {{ .Values.gatewayKindAPIVersions.gateway }}
-kind: Gateway
+apiVersion: gateway.networking.k8s.io/v1
+kind: BackendTLSPolicy
 metadata:
-  name: {{ template "..fullname" . }}-gateway
+  name: {{ template "..fullname" . }}-backendtlspolicy
   namespace: {{ .Release.Namespace }}
 spec:
-  gatewayClassName: {{ .Values.deployment.gateway.gatewayClassName }}
-  listeners:
-    - name: {{ template "..fullname" . }}-listener
-      protocol: HTTPS
-      port: 443
-      hostname: {{ .Values.deployment.gateway.hostName | quote }}
-      tls:
-        mode: Terminate
-        certificateRefs:
-          - kind: Secret
-            name: {{ .Values.deployment.gateway.tlsSecretsName  }}
-      allowedRoutes:
-        namespaces:
-          from: Same
+  targetRefs:
+    - group: ""
+      kind: Service
+      name: {{ template "..fullname" . }}
+  validation:
+    hostname: {{ .Values.deployment.gateway.backendCACertificate.hostname }}
+    caCertificateRefs:
+      - group: ""
+        kind: ConfigMap
+        name: {{ .Values.deployment.gateway.backendCACertificate.configMapName }}
 {{- end }}

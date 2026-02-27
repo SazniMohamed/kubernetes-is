@@ -1,3 +1,4 @@
+{{- if .Values.deployment.ingress.enabled }}
 # Copyright (c) 2025, WSO2 LLC. (https://www.wso2.com).
 #
 # WSO2 LLC. licenses this file to you under the Apache License,
@@ -42,3 +43,4 @@ spec:
   - hosts:
     - {{ .Values.deployment.ingress.hostName | quote }}
     secretName: {{ .Values.deployment.ingress.tlsSecretsName  }}
+{{- end }}

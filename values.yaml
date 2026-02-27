@@ -24,11 +24,12 @@ wso2:
 deployment:
   apparmor:
     # -- Flag to enable Apparmor
-    enabled: false
+    enabled: true
     # -- Apparmor profile
     profile: "RuntimeDefault"
   ingress:
     # -- Host name of the Identity server as Key Manager
+    enabled: true
     hostName: "wso2is.com"
     # -- Ingress class name
     ingressClassName: "nginx"
@@ -61,15 +62,19 @@ deployment:
         nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
   gateway:
     enabled: true
-    gatewayClassName: envoy-gateway
+    gatewayClassName: "envoy-gateway"
     hostName: "wso2is.com"
+    tlsSecretsName: "is-tls"
+    backendCACertificate:
+      configMapName: "wso2-ca-bundle"
+      hostname: "localhost"
   rbac:
     aws:
       annotations:
         eks.amazonaws.com/role-arn: "null"
   image:
     # -- Container image registry host name
-    registry: wso2
+    registry: "docker.wso2.com"
     # -- Container image repository name
     repository: "wso2is"
     # -- Container image digest
@@ -159,12 +164,12 @@ deployment:
       # -- The minimum amount of memory that should be allocated for a Pod
       memory: "2Gi"
       # -- The minimum amount of CPU that should be allocated for a Pod
-      cpu: "1500m"
+      cpu: "2"
     limits:
       # -- The maximum amount of memory that should be allocated for a Pod
       memory: "4Gi"
       # -- The maximum amount of CPU that should be allocated for a Pod
-      cpu: "1750m"
+      cpu: "3"
     jvm:
       # -- JVM memory options
       memOpts: "-Xms2048m -Xmx2048m"
@@ -571,3 +576,7 @@ openShiftKindAPIVersions:
   route: "route.openshift.io/v1"
 gatewayKindAPIVersions:
   gateway: "gateway.networking.k8s.io/v1"
+  gatewayClass: "gateway.networking.k8s.io/v1"
+  httpRoute: "gateway.networking.k8s.io/v1"
+  Backend: "gateway.envoyproxy.io/v1alpha1"
+  BackendTrafficPolicy: "gateway.envoyproxy.io/v1alpha1"

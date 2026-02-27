@@ -15,24 +15,29 @@
 # specific language governing permissions and limitations
 # under the License.
 
-apiVersion: {{ .Values.gatewayKindAPIVersions.gateway }}
-kind: Gateway
+apiVersion: {{ .Values.gatewayKindAPIVersions.httpRoute }}
+kind: HTTPRoute
 metadata:
-  name: {{ template "..fullname" . }}-gateway
-  namespace: {{ .Release.Namespace }}
+  name: {{ template "..fullname" . }}-httproute
+  namespace:  {{ .Release.Namespace }}
 spec:
-  gatewayClassName: {{ .Values.deployment.gateway.gatewayClassName }}
-  listeners:
-    - name: {{ template "..fullname" . }}-listener
-      protocol: HTTPS
-      port: 443
-      hostname: {{ .Values.deployment.gateway.hostName | quote }}
-      tls:
-        mode: Terminate
-        certificateRefs:
-          - kind: Secret
-            name: {{ .Values.deployment.gateway.tlsSecretsName  }}
-      allowedRoutes:
-        namespaces:
-          from: Same
+  parentRefs:
+  - name: {{ template "..fullname" . }}-gateway
+    port: 443
+  hostnames:
+  - {{ .Values.deployment.gateway.hostName | quote }}
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: {{ template "..fullname" . }}
+      port: 9443
+      kind: Service
+    sessionPersistence:
+      type: Cookie
+      sessionName: "paf"
+      cookieConfig:
+        lifetimeType: Session
 {{- end }}
