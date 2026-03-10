@@ -15,15 +15,18 @@
 # specific language governing permissions and limitations
 # under the License.
 
-apiVersion: {{ .Values.gatewayKindAPIVersions.gatewayClass }}
-kind: GatewayClass
+apiVersion: {{ .Values.gatewayKindAPIVersions.EnvoyProxy }}
+kind: EnvoyProxy
 metadata:
-  name: {{ .Values.deployment.gateway.gatewayClassName }}
+  name: {{ template "..fullname" . }}-envoyproxy
+  namespace: {{ .Release.Namespace }}
 spec:
-  controllerName: gateway.envoyproxy.io/gatewayclass-controller
-  parametersRef:
-      group: gateway.envoyproxy.io
-      kind: EnvoyProxy
-      name: {{ template "..fullname" . }}-envoyproxy
-      namespace: {{ .Release.Namespace }}
+  bootstrap:
+    type: Merge
+    value: |
+      layered_runtime:
+        layers:
+          - name: runtime_0
+            static_layer:
+              envoy.reloadable_features.max_response_headers_size_kb: {{ .Values.deployment.gateway.max_response_headers_size_kb }}
 {{- end }}

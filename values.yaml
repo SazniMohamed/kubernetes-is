@@ -68,6 +68,7 @@ deployment:
     backendCACertificate:
       configMapName: "wso2-ca-bundle"
       hostname: "localhost"
+    max_response_headers_size_kb: "64"
   rbac:
     aws:
       annotations:
@@ -452,6 +453,7 @@ deploymentToml:
         # -- Server name in HTTP response headers. Ref: https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#change-the-server-name-in-http-response-headers
         server: "WSO2 Carbon Server"
         proxyPort: 443
+        maxHttpHeaderSize: 8192
       sslHostConfig:
         properties:
           # -- Enabling SSL protocols in the HTTPS transport. Ref: https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#enabling-ssl-protocols-in-the-wso2-is
@@ -580,3 +582,4 @@ gatewayKindAPIVersions:
   httpRoute: "gateway.networking.k8s.io/v1"
   Backend: "gateway.envoyproxy.io/v1alpha1"
   BackendTrafficPolicy: "gateway.envoyproxy.io/v1alpha1"
+  EnvoyProxy: "gateway.envoyproxy.io/v1alpha1"
