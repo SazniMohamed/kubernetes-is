@@ -581,5 +581,4 @@ gatewayKindAPIVersions:
   gatewayClass: "gateway.networking.k8s.io/v1"
   httpRoute: "gateway.networking.k8s.io/v1"
   Backend: "gateway.envoyproxy.io/v1alpha1"
-  BackendTrafficPolicy: "gateway.envoyproxy.io/v1alpha1"
   EnvoyProxy: "gateway.envoyproxy.io/v1alpha1"
