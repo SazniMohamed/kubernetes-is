@@ -61,7 +61,7 @@ deployment:
         !!merge <<: *commonAnnotations
         nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
   gateway:
-    enabled: true
+    enabled: false
     gatewayClassName: "envoy-gateway"
     hostName: "wso2is.com"
     tlsSecretsName: "is-tls"
