@@ -453,7 +453,7 @@ deploymentToml:
         # -- Server name in HTTP response headers. Ref: https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#change-the-server-name-in-http-response-headers
         server: "WSO2 Carbon Server"
         proxyPort: 443
-        maxHttpHeaderSize: 8192
+        maxHttpHeaderSize: 65536
       sslHostConfig:
         properties:
           # -- Enabling SSL protocols in the HTTPS transport. Ref: https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#enabling-ssl-protocols-in-the-wso2-is
