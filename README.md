@@ -35,6 +35,20 @@ ___
 ### Infrastructure
 - Running Kubernetes cluster ([minikube](https://kubernetes.io/docs/tasks/tools/#minikube) or an alternative cluster)
 - Kubernetes ingress controller ([NGINX Ingress](https://github.com/kubernetes/ingress-nginx) recommended)
+- Ingress/Gateway Support (Choose one):
+    - Kubernetes ingress controller ([NGINX Ingress](https://github.com/kubernetes/ingress-nginx) recommended).
+    - Envoy Gateway (Required for the Kubernetes Gateway API pattern).
+        If choosing this option, you must install the Envoy Gateway Controller with Experimental Features and Extension APIs enabled. These are required to support `BackendTLSPolicy` for secure backend communication and `EnvoyPatchPolicy` for session persistence.
+
+    ```bash
+      helm install envoy-gateway oci://docker.io/envoyproxy/gateway-helm \
+        --version v1.7.0 \
+        -n envoy-gateway-system \
+        --create-namespace \
+        --set envoyGateway.gateway.experimentalFeatures.enabled=true \
+        --set config.envoyGateway.extensionApis.enableBackend=true \
+        --set config.envoyGateway.extensionApis.enableEnvoyPatchPolicy=true
+    ```
 - If you are deploying on OpenShift, ensure that you have administrative access to the cluster and the OpenShift CLI (oc) installed.
 
 ### Security
@@ -81,12 +95,31 @@ There are two ways to install the WSO2 Identity Server using the Helm chart.
     helm repo add wso2 https://helm.wso2.com && helm repo update
     ```
 
-2. Install the Helm chart from the Helm repository.
+2. Install the Helm chart from the Helm repository(Choose one).
+
+    a. Standard installation with NGINX Ingress:
+        
     ```shell
     helm install $RELEASE_NAME wso2/identity-server --version 7.2.0-1 \
-    -n $NAMESPACE \
-    --set deployment.image.registry="wso2"
+        -n $NAMESPACE \
+        --set deployment.image.registry="wso2"
     ```
+
+    b. Installation with Envoy Gateway:
+        
+    If you have installed the Envoy Gateway Controller as described in the Infrastructure section, run the following command to enable Kubernetes Gateway API support:
+
+    ```shell
+    helm install $RELEASE_NAME wso2/identity-server --version 7.2.0-1 \
+        -n $NAMESPACE \
+        --set deployment.image.registry="wso2" \
+        --set deployment.ingress.enabled=false \
+        --set deployment.gateway.enabled=true \
+        --set deploymentToml.keystore.tls.fileName="tlsKeyStore.p12" \
+        --set deploymentToml.keystore.tls.alias="wso2carbontls"
+    ```
+
+    > **Note**: Setting `deployment.ingress.enabled=false` ensures that the NGINX Ingress resources are not created, avoiding potential routing conflicts with the Envoy Gateway.
 
     **Note:** To disable AppArmor, set --set deployment.apparmor.enabled="false" (default: true)
 
@@ -103,11 +136,25 @@ If you prefer to build the chart from the source, follow the steps below:
 
     **Note:** You can customize the product configuration by modifying the `kubernetes-is/confs/deployment.toml` file after cloning the repository.
 
-2. Install the Helm chart from the cloned repository:
+2. Install the Helm chart from the cloned repository(Choose one):
 
+    a. Standard installation with NGINX Ingress:
+    
     ```shell
     helm install $RELEASE_NAME -n $NAMESPACE . \
     --set deployment.image.registry="wso2"
+    ```
+
+    b. Installation with Envoy Gateway:
+
+    ```shell
+    helm install $RELEASE_NAME -n $NAMESPACE . \
+    --set deployment.image.registry="wso2" \
+    --set deployment.ingress.enabled=false \
+    --set deployment.gateway.enabled=true \
+    --set deploymentToml.keystore.tls.fileName="tlsKeyStore.p12" \
+    --set deploymentToml.keystore.tls.alias="wso2carbontls"
+    wso2carbontls
     ```
 
     **Note:** 
@@ -140,14 +187,80 @@ oc adm policy add-scc-to-user anyuid -z <service-acccount-name> -n <namespace>
 --set deployment.apparmor.enabled=false
 ```
 
-## 4. Enable routes for OpenShift deployment (If you are using Kubernetes instead of OpenShift, skip this step)
+## 4. Configure Backend TLS for Envoy Gateway (Only If you are using Envoy Gateway, this step is required)
+
+When using Envoy Gateway, the communication between the Gateway and the WSO2 Identity Server pods is secured via Backend TLS. To establish this trust, Envoy must verify the certificate presented by the WSO2 IS.
+
+You must provide a Kubernetes ConfigMap containing the CA certificate that signed the WSO2 IS TLS certificate.
+
+Follow these steps to generate a Self-Signed CA Certificate and sign the WSO2 IS TLS Certificate to ensure successful Backend TLS communication between Envoy and Backend Identity Server.
+
+**a. Generate a Self-Signed Certificate Authority (CA)**
+
+First, create a private key and a self-signed root certificate to act as your internal CA.
+
+```bash
+# Generate CA private key
+openssl genrsa -out wso2carbontls-ca.key 2048
+
+# Generate Root CA certificate
+openssl req -x509 -new -nodes -key wso2carbontls-ca.key -sha256 -days 3650 \
+-out wso2carbontls-ca.crt \
+-subj "/CN=WSO2 Carbon TLS Internal CA/O=WSO2"
+```
+
+**b. Create a Server Configuration File**
+
+To ensure the certificate is compatible with Envoy Gateway's strict validation, you must include the keyUsage and Subject Alternative Name (SAN). Create a file named server.conf
+
+```txt
+[req]
+distinguished_name = req_distinguished_name
+req_extensions = v3_req
+prompt = no
+
+[req_distinguished_name]
+CN = localhost
+
+[v3_req]
+keyUsage = digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = localhost
+```
+
+**c. Generate and Sign the WSO2 IS Certificate**
+
+Generate a new private key for the WSO2 IS TLS Keystore and sign the request using the CA created in Step a.
+
+```bash
+# Generate private key for WSO2 IS
+openssl genrsa -out wso2carbontls.key 2048
+
+# Create a Certificate Signing Request (CSR)
+openssl req -new -key wso2carbontls.key -out wso2carbontls.csr -config server.conf
+
+# Sign the CSR with your Internal CA
+openssl x509 -req -in wso2carbontls.csr \
+  -CA wso2carbontls-ca.crt \
+  -CAkey wso2carbontls-ca.key \
+  -CAcreateserial \
+  -out wso2is.crt \
+  -days 365 -sha256 \
+  -extfile server.conf \
+  -extensions v3_req
+```
+
+## 5. Enable routes for OpenShift deployment (If you are using Kubernetes instead of OpenShift, skip this step)
 If you are deploying on OpenShift, you can enable routes for the WSO2 Identity Server deployment. You can do this by setting the following command:
 
 ```bash
 --set deployment.route.enabled=true
 ```
 
-## 5. Obtain the External IP
+## 6. Obtain the External IP
 
 After deploying WSO2 Identity Server, you need to find its external IP address to access it outside the cluster. Run the following command to list the Ingress resources in your namespace:
 
@@ -161,7 +274,7 @@ kubectl get ing -n $NAMESPACE
 - **ADDRESS** – External IP
 - **PORTS** – Exposed ports (usually 80, 443)
 
-## 6. Configure DNS
+## 7. Configure DNS
 
 If your hostname is backed by a DNS service, create a DNS record that maps the hostname to the external IP. If there is no DNS service, you can manually add an entry to the `/etc/hosts` file on your local machine (for evaluation purposes only):
 
@@ -169,7 +282,7 @@ If your hostname is backed by a DNS service, create a DNS record that maps the h
 <EXTERNAL-IP> wso2is.com
 ```
 
-## 7. Access WSO2 Identity Server
+## 8. Access WSO2 Identity Server
 
 Once everything is set up, you can access WSO2 Identity Server using the following URLs and credentials:
 
