@@ -196,17 +196,19 @@ spec:
               subPath: thrift-authentication.xml
             {{- if .Values.deployment.externalJKS.enabled }}
             - name: keystores
-              mountPath: /home/wso2carbon/{{ .Values.deployment.productPackName }}-{{ .Values.deployment.buildVersion }}/repository/resources/security/{{ .Values.deploymentToml.truststore.fileName }}
-              subPath: {{ .Values.deploymentToml.truststore.fileName }}
-            - name: keystores
               mountPath: /home/wso2carbon/{{ .Values.deployment.productPackName }}-{{ .Values.deployment.buildVersion }}/repository/resources/security/{{ .Values.deploymentToml.keystore.internal.fileName }}
               subPath: {{ .Values.deploymentToml.keystore.internal.fileName }}
             - name: keystores
-              mountPath: /home/wso2carbon/{{ .Values.deployment.productPackName }}-{{ .Values.deployment.buildVersion }}/repository/resources/security/{{ .Values.deploymentToml.keystore.tls.fileName }}
-              subPath: {{ .Values.deploymentToml.keystore.tls.fileName }}
-            - name: keystores
               mountPath: /home/wso2carbon/{{ .Values.deployment.productPackName }}-{{ .Values.deployment.buildVersion }}/repository/resources/security/{{ .Values.deploymentToml.keystore.primary.fileName }}
               subPath: {{ .Values.deploymentToml.keystore.primary.fileName }}
+            {{- end }}
+            {{- if or .Values.deployment.externalJKS.enabled .Values.deployment.gateway.enabled }}
+            - name: keystores
+              mountPath: /home/wso2carbon/{{ .Values.deployment.productPackName }}-{{ .Values.deployment.buildVersion }}/repository/resources/security/{{ .Values.deploymentToml.truststore.fileName }}
+              subPath: {{ .Values.deploymentToml.truststore.fileName }}
+            - name: keystores
+              mountPath: /home/wso2carbon/{{ .Values.deployment.productPackName }}-{{ .Values.deployment.buildVersion }}/repository/resources/security/{{ .Values.deploymentToml.keystore.tls.fileName }}
+              subPath: {{ .Values.deploymentToml.keystore.tls.fileName }}
             {{- end }}
             - name: {{ template "..fullname" . }}-log4j2-properties
               mountPath: /home/wso2carbon/wso2-config-volume/repository/conf/log4j2.properties
@@ -254,7 +256,7 @@ spec:
         - name: {{ template "..fullname" . }}-log4j2-properties
           configMap:
             name: {{ template "..fullname" . }}-log4j2-properties
-        {{- if .Values.deployment.externalJKS.enabled }}
+        {{- if or .Values.deployment.externalJKS.enabled .Values.deployment.gateway.enabled }}
         - name: keystores
           secret:
             secretName: {{ .Values.deployment.externalJKS.secretName }}
