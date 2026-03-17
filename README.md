@@ -114,9 +114,7 @@ There are two ways to install the WSO2 Identity Server using the Helm chart.
         -n $NAMESPACE \
         --set deployment.image.registry="wso2" \
         --set deployment.ingress.enabled=false \
-        --set deployment.gateway.enabled=true \
-        --set deploymentToml.keystore.tls.fileName="tlsKeyStore.p12" \
-        --set deploymentToml.keystore.tls.alias="wso2carbontls"
+        --set deployment.gateway.enabled=true
     ```
 
     > **Note**: Setting `deployment.ingress.enabled=false` ensures that the NGINX Ingress resources are not created, avoiding potential routing conflicts with the Envoy Gateway.
@@ -151,10 +149,7 @@ If you prefer to build the chart from the source, follow the steps below:
     helm install $RELEASE_NAME -n $NAMESPACE . \
     --set deployment.image.registry="wso2" \
     --set deployment.ingress.enabled=false \
-    --set deployment.gateway.enabled=true \
-    --set deploymentToml.keystore.tls.fileName="tlsKeyStore.p12" \
-    --set deploymentToml.keystore.tls.alias="wso2carbontls"
-    wso2carbontls
+    --set deployment.gateway.enabled=true
     ```
 
     **Note:** 
@@ -193,7 +188,10 @@ When using Envoy Gateway, the communication between the Gateway and the WSO2 Ide
 
 You must provide a Kubernetes ConfigMap containing the CA certificate that signed the WSO2 IS TLS certificate.
 
-Follow these steps to generate a Self-Signed CA Certificate and sign the WSO2 IS TLS Certificate to ensure successful Backend TLS communication between Envoy and Backend Identity Server.
+Follow the steps to generate a self-signed CA certificate and sign the WSO2 IS Keystore certificate to ensure successful Backend TLS communication between Envoy and the backend Identity Server.
+
+> Note: WSO2 Identity Server supports using multiple, purpose‑specific keystores — for example, separate keystores for Primary, Internal, and TLS use cases. In production it’s recommended to maintain distinct keystores so that keys used for different functions (such as internal data encryption, token signing, and TLS communication) can be managed and rotated independently. For Backend TLS communication with Envoy Gateway, only the TLS keystore (which holds the certificate used for HTTPS/TLS connections) is required.
+
 
 **a. Generate a Self-Signed Certificate Authority (CA)**
 
@@ -201,12 +199,12 @@ First, create a private key and a self-signed root certificate to act as your in
 
 ```bash
 # Generate CA private key
-openssl genrsa -out wso2carbontls-ca.key 2048
+openssl genrsa -out wso2carbon-ca.key 2048
 
 # Generate Root CA certificate
-openssl req -x509 -new -nodes -key wso2carbontls-ca.key -sha256 -days 3650 \
--out wso2carbontls-ca.crt \
--subj "/CN=WSO2 Carbon TLS Internal CA/O=WSO2"
+openssl req -x509 -new -nodes -key wso2carbon-ca.key -sha256 -days 3650 \
+-out wso2carbon-ca.crt \
+-subj "/CN=WSO2 Carbon Internal CA/O=WSO2"
 ```
 
 **b. Create a Server Configuration File**
@@ -233,24 +231,70 @@ DNS.1 = localhost
 
 **c. Generate and Sign the WSO2 IS Certificate**
 
-Generate a new private key for the WSO2 IS TLS Keystore and sign the request using the CA created in Step a.
+Generate a new private key for the WSO2 IS Keystore and sign the request using the CA created in Step a.
 
 ```bash
 # Generate private key for WSO2 IS
-openssl genrsa -out wso2carbontls.key 2048
+openssl genrsa -out wso2carbon.key 2048
 
 # Create a Certificate Signing Request (CSR)
-openssl req -new -key wso2carbontls.key -out wso2carbontls.csr -config server.conf
+openssl req -new -key wso2carbon.key -out wso2carbon.csr -config server.conf
 
 # Sign the CSR with your Internal CA
-openssl x509 -req -in wso2carbontls.csr \
-  -CA wso2carbontls-ca.crt \
-  -CAkey wso2carbontls-ca.key \
+openssl x509 -req -in wso2carbon.csr \
+  -CA wso2carbon-ca.crt \
+  -CAkey wso2carbon-ca.key \
   -CAcreateserial \
-  -out wso2is.crt \
+  -out wso2carbon.crt \
   -days 365 -sha256 \
   -extfile server.conf \
   -extensions v3_req
+```
+
+**d. Package into a PKCS12 Keystore**
+WSO2 Identity Server prefers the PKCS12 format for its Keystore. Convert the certificate and key into a .p12 file.
+
+```bash
+openssl pkcs12 -export -in wso2carbon.crt -inkey wso2carbon.key \
+  -out wso2carbon.p12 -name wso2carbon -passout pass:wso2carbon
+```
+
+**e. Import the CA Certificate into the Keystore Truststore**
+
+To ensure that WSO2 Identity Server can trust the CA for TLS communication, you need to add the CA certificate to the client truststore. You can either use the truststore provided in the WSO2 product distribution (client-truststore.p12) or create your own. This allows WSO2 IS to validate certificates issued by the CA, including its own TLS certificate.
+
+```bash
+keytool -importcert \
+  -alias wso2carbon \
+  -file wso2carbon-ca.crt \
+  -keystore client-truststore.p12 \
+  -storetype PKCS12 \
+  -storepass wso2carbon \
+  -noprompt
+```
+
+**f. Create Kubernetes Resources**
+
+Deploy the generated TLS Keystore and CA Certificate into the Kubernetes namespace.
+
+I. Create TLS Keystore Secret
+
+This secret contains the PKCS12 keystore used by the WSO2 Identity Server pods to secure their TLS Communication.
+
+```bash
+kubectl create secret generic keystores \
+  --from-file=wso2carbon.p12 \
+  --from-file=client-truststore.p12 \
+  -n $NAMESPACE
+```
+II. Create CA Bundle ConfigMap
+
+This ConfigMap contains the Root CA certificate. Envoy Gateway uses this to verify the identity of the WSO2 IS pods during the TLS handshake.
+
+```bash
+kubectl create configmap wso2-ca-bundle \
+  --from-file=ca.crt=wso2carbon-ca.crt \
+  -n $NAMESPACE
 ```
 
 ## 5. Enable routes for OpenShift deployment (If you are using Kubernetes instead of OpenShift, skip this step)
