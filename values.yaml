@@ -432,6 +432,8 @@ deploymentToml:
      enableStartTls: true
      enableAuthentication: true
   oauth:
+    # -- Enable/Disable the scope authorization for all the OAuth clients. Ref: https://apim.docs.wso2.com/en/latest/api-security/key-management/third-party-key-managers/configure-wso2is7-connector/
+    authorizeAllScopes: false
     # -- Enable/Disable the internal token cleanup process. Ref: https://is.docs.wso2.com/en/6.0.0/deploy/remove-unused-tokens-from-the-database/#!
     tokenCleanup: false
     tokenGeneration:
