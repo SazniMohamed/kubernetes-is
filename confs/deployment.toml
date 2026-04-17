@@ -216,6 +216,11 @@ properties.KUBERNETES_NAMESPACE={{ .Release.Namespace | quote }}
 properties.KUBERNETES_SERVICES={{ include "..fullname" . | quote }}
 {{- end }}
 
+{{- if .Values.deploymentToml.oauth.authorizeAllScopes }}
+[oauth]
+authorize_all_scopes = {{.Values.deploymentToml.oauth.authorizeAllScopes }}
+{{- end }}
+
 [oauth.token_cleanup]
 enable = {{.Values.deploymentToml.oauth.tokenCleanup }}
 

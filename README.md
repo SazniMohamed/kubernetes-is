@@ -605,6 +605,7 @@ helm install "$RELEASE_NAME" wso2/identity-server --version 7.2.0-1  -n "$NAMESP
 | deploymentToml.keystore.tls.keyPassword | string | `"wso2carbon"` |  |
 | deploymentToml.keystore.tls.password | string | `"wso2carbon"` |  |
 | deploymentToml.keystore.tls.type | string | `"PKCS12"` |  |
+| deploymentToml.oauth.authorizeAllScopes | bool | `false` | Enable/Disable the scope authorization for all the OAuth clients. Ref: https://apim.docs.wso2.com/en/latest/api-security/key-management/third-party-key-managers/configure-wso2is7-connector/ |
 | deploymentToml.oauth.tokenCleanup | bool | `false` | Enable/Disable the internal token cleanup process. Ref: https://is.docs.wso2.com/en/6.0.0/deploy/remove-unused-tokens-from-the-database/#! |
 | deploymentToml.oauth.tokenGeneration.includeUsernameInAccessToken | bool | `false` | Add UserName Assertions in Access Tokens. Ref: https://is.docs.wso2.com/en/6.0.0/deploy/enable-assertions-in-access-tokens/ |
 | deploymentToml.otp.email.addressRequestPage | string | `"https://localhost:9443/emailotpauthenticationendpoint/emailAddress.jsp"` |  |
