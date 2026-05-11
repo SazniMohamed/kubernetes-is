@@ -23,6 +23,7 @@ offset = {{ .Values.deploymentToml.server.offset | quote }}
 [transport.https.properties]
 proxyPort = {{ .Values.deploymentToml.transport.https.properties.proxyPort }}
 server = {{ .Values.deploymentToml.transport.https.properties.server | quote }}
+maxHttpHeaderSize = {{ .Values.deploymentToml.transport.https.properties.maxHttpHeaderSize }}
 
 [transport.https.sslHostConfig.properties]
 protocols={{ .Values.deploymentToml.transport.https.sslHostConfig.properties.protocols | quote }}

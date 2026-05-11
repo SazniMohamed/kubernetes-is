@@ -29,6 +29,7 @@ deployment:
     profile: "RuntimeDefault"
   ingress:
     # -- Host name of the Identity server as Key Manager
+    enabled: true
     hostName: "wso2is.com"
     # -- Ingress class name
     ingressClassName: "nginx"
@@ -59,6 +60,15 @@ deployment:
       annotations:
         !!merge <<: *commonAnnotations
         nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+  gateway:
+    enabled: false
+    gatewayClassName: "envoy-gateway"
+    hostName: "wso2is.com"
+    tlsSecretsName: "is-tls"
+    backendCACertificate:
+      configMapName: "wso2-ca-bundle"
+      hostname: "localhost"
+    max_response_headers_size_kb: "64"
   rbac:
     aws:
       annotations:
@@ -445,6 +455,7 @@ deploymentToml:
         # -- Server name in HTTP response headers. Ref: https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#change-the-server-name-in-http-response-headers
         server: "WSO2 Carbon Server"
         proxyPort: 443
+        maxHttpHeaderSize: 65536
       sslHostConfig:
         properties:
           # -- Enabling SSL protocols in the HTTPS transport. Ref: https://is.docs.wso2.com/en/latest/deploy/security/configure-transport-level-security/#enabling-ssl-protocols-in-the-wso2-is
@@ -567,3 +578,9 @@ k8sKindAPIVersions:
 openShiftKindAPIVersions:
   # -- OpenShift API version for kind Route
   route: "route.openshift.io/v1"
+gatewayKindAPIVersions:
+  gateway: "gateway.networking.k8s.io/v1"
+  gatewayClass: "gateway.networking.k8s.io/v1"
+  httpRoute: "gateway.networking.k8s.io/v1"
+  Backend: "gateway.envoyproxy.io/v1alpha1"
+  EnvoyProxy: "gateway.envoyproxy.io/v1alpha1"
