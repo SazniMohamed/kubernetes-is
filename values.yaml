@@ -69,7 +69,7 @@ deployment:
       configMapName: "wso2-ca-bundle"
       hostname: "localhost"
     max_response_headers_size_kb: "64"
-    createGatewayClass: false
+    createGatewayClass: true      # 
   rbac:
     aws:
       annotations:
