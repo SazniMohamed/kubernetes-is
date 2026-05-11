@@ -69,6 +69,7 @@ deployment:
       configMapName: "wso2-ca-bundle"
       hostname: "localhost"
     max_response_headers_size_kb: "64"
+    createGatewayClass: false
   rbac:
     aws:
       annotations:
@@ -584,3 +585,4 @@ gatewayKindAPIVersions:
   httpRoute: "gateway.networking.k8s.io/v1"
   Backend: "gateway.envoyproxy.io/v1alpha1"
   EnvoyProxy: "gateway.envoyproxy.io/v1alpha1"
+  backendTLSPolicy: "gateway.networking.k8s.io/v1alpha3"

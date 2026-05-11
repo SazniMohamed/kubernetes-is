@@ -34,7 +34,6 @@ ___
 
 ### Infrastructure
 - Running Kubernetes cluster ([minikube](https://kubernetes.io/docs/tasks/tools/#minikube) or an alternative cluster)
-- Kubernetes ingress controller ([NGINX Ingress](https://github.com/kubernetes/ingress-nginx) recommended)
 - Ingress/Gateway Support (Choose one):
     - Kubernetes ingress controller ([NGINX Ingress](https://github.com/kubernetes/ingress-nginx) recommended).
     - Envoy Gateway (Required for the Kubernetes Gateway API pattern).
@@ -95,7 +94,7 @@ There are two ways to install the WSO2 Identity Server using the Helm chart.
     helm repo add wso2 https://helm.wso2.com && helm repo update
     ```
 
-2. Install the Helm chart from the Helm repository(Choose one).
+2. Install the Helm chart from the Helm repository (Choose one).
 
     a. Standard installation with NGINX Ingress:
         
@@ -134,7 +133,7 @@ If you prefer to build the chart from the source, follow the steps below:
 
     **Note:** You can customize the product configuration by modifying the `kubernetes-is/confs/deployment.toml` file after cloning the repository.
 
-2. Install the Helm chart from the cloned repository(Choose one):
+2. Install the Helm chart from the cloned repository (Choose one):
 
     a. Standard installation with NGINX Ingress:
     
