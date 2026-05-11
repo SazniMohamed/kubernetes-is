@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-apiVersion: {{ .Values.gatewayKindAPIVersions.gatewayClass }}
+apiVersion: gateway.networking.k8s.io/v1
 kind: GatewayClass
 metadata:
   name: {{ .Values.deployment.gateway.gatewayClassName }}
