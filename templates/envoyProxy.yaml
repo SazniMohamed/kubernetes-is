@@ -28,5 +28,5 @@ spec:
         layers:
           - name: runtime_0
             static_layer:
-              envoy.reloadable_features.max_response_headers_size_kb: {{ .Values.deployment.gateway.max_response_headers_size_kb }}
+              envoy.reloadable_features.max_response_headers_size_kb: {{ .Values.deployment.gateway.maxResponseHeadersSizeKB }}
 {{- end }}

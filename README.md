@@ -34,7 +34,6 @@ ___
 
 ### Infrastructure
 - Running Kubernetes cluster ([minikube](https://kubernetes.io/docs/tasks/tools/#minikube) or an alternative cluster)
-- Kubernetes ingress controller ([NGINX Ingress](https://github.com/kubernetes/ingress-nginx) recommended)
 - Ingress/Gateway Support (Choose one):
     - Kubernetes ingress controller ([NGINX Ingress](https://github.com/kubernetes/ingress-nginx) recommended).
     - Envoy Gateway (Required for the Kubernetes Gateway API pattern).
@@ -95,7 +94,7 @@ There are two ways to install the WSO2 Identity Server using the Helm chart.
     helm repo add wso2 https://helm.wso2.com && helm repo update
     ```
 
-2. Install the Helm chart from the Helm repository(Choose one).
+2. Install the Helm chart from the Helm repository (Choose one).
 
     a. Standard installation with NGINX Ingress:
         
@@ -134,7 +133,7 @@ If you prefer to build the chart from the source, follow the steps below:
 
     **Note:** You can customize the product configuration by modifying the `kubernetes-is/confs/deployment.toml` file after cloning the repository.
 
-2. Install the Helm chart from the cloned repository(Choose one):
+2. Install the Helm chart from the cloned repository (Choose one):
 
     a. Standard installation with NGINX Ingress:
     
@@ -859,3 +858,9 @@ helm install "$RELEASE_NAME" wso2/identity-server --version 7.2.0-1  -n "$NAMESP
 | openShiftKindAPIVersions.route | string | `"route.openshift.io/v1"` | OpenShift API version for kind Route |
 | wso2.subscription.password | string | `""` | WSO2 account password |
 | wso2.subscription.username | string | `""` | WSO2 account username |
+| deployment.gateway.createGatewayClass | bool | `true` | Create a GatewayClass resource. Set to `false` if Envoy Gateway already manages its own cluster-scoped GatewayClass. |
+| gatewayKindAPIVersions.gateway | string | `"gateway.networking.k8s.io/v1"` | API version for Gateway. |
+| gatewayKindAPIVersions.gatewayClass | string | `"gateway.networking.k8s.io/v1"` | API version for GatewayClass. |
+| gatewayKindAPIVersions.httpRoute | string | `"gateway.networking.k8s.io/v1"` | API version for HTTPRoute. |
+| gatewayKindAPIVersions.Backend | string | `"gateway.envoyproxy.io/v1alpha1"` | API version for Envoy Gateway Backend. |
+| gatewayKindAPIVersions.EnvoyProxy | string | `"gateway.envoyproxy.io/v1alpha1"` | API version for EnvoyProxy. |

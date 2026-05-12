@@ -68,7 +68,8 @@ deployment:
     backendCACertificate:
       configMapName: "wso2-ca-bundle"
       hostname: "localhost"
-    max_response_headers_size_kb: "64"
+    maxResponseHeadersSizeKB: "64"
+    createGatewayClass: true
   rbac:
     aws:
       annotations:
