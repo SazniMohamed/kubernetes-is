@@ -201,6 +201,8 @@ spec:
             - name: keystores
               mountPath: /home/wso2carbon/{{ .Values.deployment.productPackName }}-{{ .Values.deployment.buildVersion }}/repository/resources/security/{{ .Values.deploymentToml.keystore.primary.fileName }}
               subPath: {{ .Values.deploymentToml.keystore.primary.fileName }}
+            {{- end }}
+            {{- if .Values.deployment.externalJKS.enabled }}
             - name: keystores
               mountPath: /home/wso2carbon/{{ .Values.deployment.productPackName }}-{{ .Values.deployment.buildVersion }}/repository/resources/security/{{ .Values.deploymentToml.truststore.fileName }}
               subPath: {{ .Values.deploymentToml.truststore.fileName }}
