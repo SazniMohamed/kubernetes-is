@@ -858,7 +858,7 @@ helm install "$RELEASE_NAME" wso2/identity-server --version 7.2.0-1  -n "$NAMESP
 | openShiftKindAPIVersions.route | string | `"route.openshift.io/v1"` | OpenShift API version for kind Route |
 | wso2.subscription.password | string | `""` | WSO2 account password |
 | wso2.subscription.username | string | `""` | WSO2 account username |
-| gateway.createGatewayClass | bool | `true` | Create a GatewayClass resource. Set to `false` if Envoy Gateway already manages its own cluster-scoped GatewayClass. |
+| deployment.gateway.createGatewayClass | bool | `true` | Create a GatewayClass resource. Set to `false` if Envoy Gateway already manages its own cluster-scoped GatewayClass. |
 | gatewayKindAPIVersions.gateway | string | `"gateway.networking.k8s.io/v1"` | API version for Gateway. |
 | gatewayKindAPIVersions.gatewayClass | string | `"gateway.networking.k8s.io/v1"` | API version for GatewayClass. |
 | gatewayKindAPIVersions.httpRoute | string | `"gateway.networking.k8s.io/v1"` | API version for HTTPRoute. |
