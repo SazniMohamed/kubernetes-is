@@ -1,4 +1,4 @@
-{{- if .Values.deployment.gateway.enabled }}
+{{- if and .Values.deployment.gateway.enabled .Values.deployment.gateway.createGatewayClass }}
 # Copyright (c) 2026, WSO2 LLC. (https://www.wso2.com).
 #
 # WSO2 LLC. licenses this file to you under the Apache License,
